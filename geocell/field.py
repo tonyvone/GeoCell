@@ -72,9 +72,16 @@ _STATUS_WEIGHT_HISTORICAL = {ACTIVE: 0.9, CONTESTED: 0.85, SUPERSEDED: 1.15, RET
 
 
 class GeoCellField:
-    def __init__(self, dims: int = 768, support_threshold: float = 0.10):
+    def __init__(self, dims: int = 768, support_threshold: float = 0.10,
+                 encoder=None):
         self.dims = dims
         self.support_threshold = support_threshold
+        # Pluggable position encoder: any callable (text, dims) -> unit
+        # vector. Defaults to the deterministic hash encoder. Swapping in a
+        # learned embedding lifts recall on paraphrase without touching the
+        # belief layer (lifecycle, trust, contradiction) -- those operate on
+        # the resulting geometry, not on how it was produced.
+        self._encode = encoder or encode
         self.cells: List[GeoCell] = []
         self.graph = nx.Graph()
         self._trust_trace: Dict[int, Dict[str, float]] = {}
@@ -90,6 +97,10 @@ class GeoCellField:
         self._postings: Dict[str, Dict[int, int]] = defaultdict(dict)
         self._doc_len: Dict[int, int] = {}
         self._total_len = 0
+        # Cached support adjacency (id -> [(neighbor, weight), ...]) so
+        # spreading activation never traverses the networkx graph at query
+        # time. Append-only as edges are wired.
+        self._sup_nb: Dict[int, List[Tuple[int, float]]] = defaultdict(list)
         # True when loaded from a compact snapshot: float positions are
         # rotated-space placeholders, so all similarity must use bits and
         # settle must first re-derive geometry from the lexical anchors.
@@ -99,7 +110,7 @@ class GeoCellField:
         """The cell's lexical anchor: the deterministic encoding of its
         content, unaffected by field relaxation."""
         if c.id not in self._anchors:
-            self._anchors[c.id] = encode(c.content, self.dims)
+            self._anchors[c.id] = self._encode(c.content, self.dims)
         return self._anchors[c.id]
 
     # ------------------------------------------------------------------
@@ -110,7 +121,7 @@ class GeoCellField:
                confidence: float = 0.75, authority: float = 0.5,
                kind: str = OBSERVED, parents: Optional[List[int]] = None) -> int:
         content = content.strip()
-        pos = encode(content, self.dims)
+        pos = self._encode(content, self.dims)
         toks = set(tokenize(content))
         cell = GeoCell(
             id=len(self.cells),
@@ -136,6 +147,8 @@ class GeoCellField:
         for pid in cell.parents:
             self.graph.add_edge(cell.id, pid, state=SUPPORT, weight=0.9,
                                 reason="derivation", resolved=False)
+            self._sup_nb[cell.id].append((pid, 0.9))
+            self._sup_nb[pid].append((cell.id, 0.9))
         if self.quantized:
             self._bits_pos = np.vstack([self._bits_pos, pack_signs(pos)])
             self._bits_anchor = np.vstack([self._bits_anchor, pack_signs(self._anchor(cell))])
@@ -212,8 +225,36 @@ class GeoCellField:
             return SUPPORT, max(0.01, sim + boost), "support"
         return UNKNOWN, 0.0, "unknown"
 
+    # Cap on how many cells can share a token before it stops being a
+    # useful join key (ubiquitous words connect everything to everything).
+    _CANDIDATE_DF_CAP = 500
+    # Cap on candidates actually scored per ingest: the strongest lexical
+    # overlaps win. Keeps ingest near-constant time at any field size.
+    _CANDIDATE_BUDGET = 256
+
+    def _candidates(self, new: GeoCell) -> List[int]:
+        """Candidate neighbors for relation wiring, via the inverted index.
+
+        Two cells can only relate (support threshold or shared subject) if
+        they share informative vocabulary, so scoring every cell is wasted
+        work: we count shared non-ubiquitous tokens and keep the top
+        overlaps. Subject tokens always count, so same-subject conflict
+        detection (the lifecycle's trigger) is never missed."""
+        counts: Counter = Counter()
+        toks = {stem(t) for t in tokenize(new.content)} | set(new.subject.split())
+        for tok in toks:
+            postings = self._postings.get(tok)
+            if not postings or len(postings) > self._CANDIDATE_DF_CAP:
+                continue
+            weight = 3 if tok in new.subject else 1
+            for cid in postings:
+                if cid != new.id:
+                    counts[cid] += weight
+        return [cid for cid, _ in counts.most_common(self._CANDIDATE_BUDGET)]
+
     def _wire(self, new: GeoCell) -> None:
-        for other in self.cells[:-1]:
+        for cid in self._candidates(new):
+            other = self.cells[cid]
             if other.id in new.parents:
                 continue
             state, weight, reason = self._relation(new, other)
@@ -222,6 +263,8 @@ class GeoCellField:
             self.graph.add_edge(new.id, other.id, state=state, weight=float(weight),
                                 reason=reason, resolved=False)
             if state == SUPPORT:
+                self._sup_nb[new.id].append((other.id, float(weight)))
+                self._sup_nb[other.id].append((new.id, float(weight)))
                 new.radius = max(0.08, new.radius * 0.98)
             else:
                 new.radius = min(0.45, new.radius * 1.08)
@@ -419,46 +462,72 @@ class GeoCellField:
     # Recall: geometric seeding + spreading activation
     # ------------------------------------------------------------------
 
-    def _support_matrix(self) -> np.ndarray:
+    def _bm25_candidates(self, query: str):
+        """BM25 scores restricted to cells sharing query vocabulary, plus
+        the candidate id set. Scales with matches, not with field size."""
+        scores: Dict[int, float] = defaultdict(float)
+        if not self._doc_len:
+            return scores
         n = len(self.cells)
-        A = np.zeros((n, n), dtype=np.float64)
-        for u, v, d in self.graph.edges(data=True):
-            if d.get("state") == SUPPORT:
-                A[u, v] = A[v, u] = float(d.get("weight", 0.0))
-        row = A.sum(axis=1, keepdims=True)
-        row[row == 0] = 1.0
-        return A / row
+        avgdl = self._total_len / max(1, len(self._doc_len))
+        for tok in {stem(t) for t in tokenize(query)}:
+            postings = self._postings.get(tok)
+            if not postings:
+                continue
+            df = len(postings)
+            idf = np.log(1.0 + (n - df + 0.5) / (df + 0.5))
+            for cid, tf in postings.items():
+                dl = self._doc_len.get(cid, 0)
+                scores[cid] += idf * (tf * (k1 := 1.5) + tf) / (tf + k1 * (1.0 - 0.75 + 0.75 * dl / avgdl))
+        return scores
+
+    # Recall scope caps: how many lexical candidates to rerank, and how
+    # many support-neighbours each may pull into scope for diffusion.
+    _RECALL_CANDIDATES = 200
+    _NEIGHBOR_FANOUT = 24
 
     def recall(self, query: str, k: int = 8) -> List[Dict[str, Any]]:
         if not self.cells:
             return []
         self._ensure_trust()
-        q = encode(query, self.dims)
         qtoks = set(tokenize(query))
         historical = bool(set(raw_words(query)) & HISTORICAL_WORDS)
         status_weight = _STATUS_WEIGHT_HISTORICAL if historical else _STATUS_WEIGHT
 
-        # Resonance blends the lexical anchor (what the memory says) with
-        # the settled position (where the evidence moved it). In quantized
-        # mode both are 96-byte sign signatures compared via XOR+popcount.
-        if self.quantized:
-            sims = 0.65 * asymmetric_similarity(q, self._bits_anchor, self.dims) + \
-                   0.35 * asymmetric_similarity(q, self._bits_pos, self.dims)
-        # Lexical channel: BM25, normalized so it blends with the geometric
-        # cosine. It carries the term-informativeness the hash geometry
-        # lacks, which is what breaks ties between sibling sentences.
-        bm = self._bm25(query)
-        bmax = bm.max()
-        if bmax > 0:
-            bm = bm / bmax
+        # Candidate generation via the inverted index: only the top lexical
+        # matches are reranked, plus their strongest support-neighbours for
+        # diffusion. Recall scales with matches, not field size, and never
+        # materializes a dense adjacency matrix.
+        bm_raw = self._bm25_candidates(query)
+        if not bm_raw:
+            return []
+        bmax = max(bm_raw.values())
+        cand = sorted(bm_raw, key=bm_raw.get, reverse=True)[:self._RECALL_CANDIDATES]
+        bm = {cid: bm_raw[cid] / bmax for cid in cand}
+        scope = set(cand)
+        for cid in cand:
+            nb = self._sup_nb.get(cid)
+            if nb:
+                for j, _ in sorted(nb, key=lambda x: x[1], reverse=True)[:self._NEIGHBOR_FANOUT]:
+                    scope.add(j)
 
-        base = np.zeros(len(self.cells), dtype=np.float64)
-        for c in self.cells:
-            if self.quantized:
-                sim = float(sims[c.id])
-            else:
-                sim = 0.65 * cosine(q, self._anchor(c)) + \
-                      0.35 * cosine(q, np.array(c.position, dtype=np.float32))
+        q = self._encode(query, self.dims)
+        ids = list(scope)
+        # Batch the geometric similarity for the whole scope in one matmul
+        # rather than a Python cosine per cell.
+        if self.quantized:
+            sims = asymmetric_similarity(q, self._bits_anchor[ids], self.dims)
+        else:
+            qn = q / (np.linalg.norm(q) or 1.0)
+            A = np.empty((len(ids), self.dims), dtype=np.float32)
+            P = np.empty((len(ids), self.dims), dtype=np.float32)
+            for r, cid in enumerate(ids):
+                A[r] = self._anchor(self.cells[cid])
+                P[r] = self.cells[cid].position
+            sims = 0.65 * (A @ qn) + 0.35 * (P @ qn)
+        base: Dict[int, float] = {}
+        for r, cid in enumerate(ids):
+            c = self.cells[cid]
             subject_terms = set(c.subject.split())
             if subject_terms and subject_terms <= qtoks:
                 bonus = 0.16
@@ -466,20 +535,30 @@ class GeoCellField:
                 bonus = 0.04
             else:
                 bonus = 0.0
-            base[c.id] = max(0.0, 0.55 * sim + 0.45 * bm[c.id] + bonus)
+            base[cid] = max(0.0, 0.55 * float(sims[r]) + 0.45 * bm.get(cid, 0.0) + bonus)
 
-        # Spreading activation: energy diffuses two hops along support edges,
-        # so a query can light up memories it never mentions.
-        A = self._support_matrix()
-        act = base + 0.30 * (A @ base) + 0.12 * (A @ (A @ base))
+        # Spreading activation over the local subgraph: energy diffuses two
+        # hops along cached support edges so a query can light up memories
+        # it never mentions, without touching the full graph.
+        def diffuse(vec: Dict[int, float]) -> Dict[int, float]:
+            out: Dict[int, float] = {}
+            for i in scope:
+                nb = self._sup_nb.get(i)
+                if not nb:
+                    out[i] = 0.0
+                    continue
+                rs = sum(w for _, w in nb) or 1.0
+                out[i] = sum((w / rs) * vec.get(j, 0.0) for j, w in nb)
+            return out
 
+        hop1 = diffuse(base)
+        hop2 = diffuse(hop1)
         scored = []
-        for c in self.cells:
-            # A historical question asks what *was* believed, so the
-            # current trust level must not bury displaced beliefs.
+        for cid in scope:
+            c = self.cells[cid]
+            act = base[cid] + 0.30 * hop1[cid] + 0.12 * hop2[cid]
             trust_gate = 1.0 if historical else 0.45 + 0.55 * c.trust
-            score = act[c.id] * trust_gate * status_weight.get(c.status, 0.5)
-            scored.append((score, c))
+            scored.append((act * trust_gate * status_weight.get(c.status, 0.5), c))
         scored.sort(key=lambda x: (x[0], x[1].id), reverse=True)
         return [c.view(score) for score, c in scored[:k]]
 
@@ -849,10 +928,19 @@ class GeoCellField:
         for u, v, state, weight, rid, resolved in data.get("edges_packed", []):
             mem.graph.add_edge(u, v, state=state, weight=weight,
                                reason=reasons[rid], resolved=bool(resolved))
+        mem._rebuild_support_cache()
         mem.quantized = True
         mem._serving_only = True
         mem._trust_dirty = True
         return mem
+
+    def _rebuild_support_cache(self) -> None:
+        self._sup_nb = defaultdict(list)
+        for u, v, d in self.graph.edges(data=True):
+            if d.get("state") == SUPPORT:
+                w = float(d.get("weight", 0.0))
+                self._sup_nb[u].append((v, w))
+                self._sup_nb[v].append((u, w))
 
     # ------------------------------------------------------------------
     # Persistence
@@ -878,6 +966,7 @@ class GeoCellField:
             mem.graph.add_node(c.id)
         for u, v, d in data.get("edges", []):
             mem.graph.add_edge(u, v, **d)
+        mem._rebuild_support_cache()
         mem._trust_dirty = True
         return mem
 
