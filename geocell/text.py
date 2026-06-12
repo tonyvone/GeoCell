@@ -104,7 +104,17 @@ def extract_claim_values(text: str) -> List[Dict[str, Any]]:
     return values
 
 
+_PREAMBLE_RE = re.compile(
+    r"^(?:effective|as\s+of|beginning|starting|commencing|with\s+effect\s+from|"
+    r"as\s+from|per|currently|recently|previously|originally|historically|"
+    r"going\s+forward)\b[^,]*,\s*", re.IGNORECASE)
+
+
 def extract_subject(text: str) -> str:
+    # Drop a leading temporal/adverbial preamble ("Effective 2026, ...",
+    # "As of Q1, ...") -- it is never the subject, and in policy text it
+    # otherwise displaces the real entity and breaks contradiction keying.
+    text = _PREAMBLE_RE.sub("", text.strip())
     # Prefer a capitalized multi-word phrase (proper-noun-ish anchor).
     caps = re.findall(r"(?:[A-Z][a-zA-Z0-9-]+)(?:\s+[A-Z][a-zA-Z0-9-]+){0,3}", text)
     for c in caps:

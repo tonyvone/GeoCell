@@ -81,6 +81,14 @@ automatically *retracted* the moment they contradict observed evidence.
 merge into concept cells at the cluster centroid — abstractions used for
 navigation and spreading, never as direct answers.
 
+## Shadow-mode replay (go-to-market tool)
+
+`python -m geocell.shadow corpus.jsonl queries.jsonl --out report.json`
+runs GeoCell over a corpus + real query log, **offline, read-only, zero
+LLM calls**, and reports deflection rate, agreement with the current
+system, the **stale/contradicted answers it found** (with citations), and
+projected $/energy savings. See `evals/shadow_sample/`.
+
 ## v0.5: hybrid retrieval (geometry + BM25) and confident abstention
 
 The hash geometry weights every shared word equally, so a common subject
