@@ -1,0 +1,1 @@
+{"text": "def cache_key_order(prefix: str, ident) -> str:\n    return prefix + str(ident)", "wall_s": 4.440872077999757}

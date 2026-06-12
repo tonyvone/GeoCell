@@ -1,0 +1,1 @@
+{"text": "def get_max_conn(settings: dict) -> int:\n    return settings.get(\"max_conn\", 10)", "wall_s": 4.23167943999988}

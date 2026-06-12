@@ -1,0 +1,1 @@
+{"text": "def get_order(self, order_id: int):\n    cur = self.conn.cursor()\n    params = (order_id,)\n    cur.execute(\"SELECT id, item FROM orders WHERE id = ?\", params)\n    return cur.fetchone()", "wall_s": 5.787061096000343}

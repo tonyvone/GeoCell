@@ -1,0 +1,1 @@
+{"text": "def get_telemetry(settings: dict) -> bool:\n    return settings.get(\"telemetry\", False)", "wall_s": 5.253597675000037}

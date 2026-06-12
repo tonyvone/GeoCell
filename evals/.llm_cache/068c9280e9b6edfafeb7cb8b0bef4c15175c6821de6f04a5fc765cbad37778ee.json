@@ -1,0 +1,1 @@
+{"text": "def get_retries(settings: dict) -> int:\n    return settings.get(\"retries\", 3)", "wall_s": 3.9993278930000997}

@@ -1,0 +1,1 @@
+{"text": "def require_session(token: str) -> None:\n    if not token:\n        raise PermissionError(\"missing session\")", "wall_s": 4.925945188000242}

@@ -1,0 +1,1 @@
+{"text": "def require_csrf(token: str) -> None:\n    if not token:\n        raise PermissionError(\"missing csrf token\")", "wall_s": 4.528933834000327}

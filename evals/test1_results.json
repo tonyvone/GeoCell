@@ -1,0 +1,291 @@
+{
+  "summary": {
+    "test_bugs": 21,
+    "fixed_by_geocell_no_llm": 12,
+    "geocell_no_llm_rate": 0.571,
+    "fixed_by_llm_fallback": 8,
+    "total_fixed": 20,
+    "overall_fix_rate": 0.952,
+    "llm_calls_in_test_phase": 9,
+    "llm_calls_avoided_by_geocell": 12,
+    "call_reduction_vs_llm_only": 0.571,
+    "avg_geocell_latency_ms": 2.66,
+    "avg_llm_latency_s": 6.75,
+    "speedup_x": 2537.6,
+    "geocell_quarantines": 0,
+    "llm_fix_quarantines": 0,
+    "hallucination_probes_caught": 5,
+    "hallucination_probes_total": 5,
+    "baseline_llm_only": {
+      "fixed": 20,
+      "total": 22,
+      "wall_s": 108.2
+    },
+    "llm_report": {
+      "live_calls": 58,
+      "cache_hits": 3,
+      "est_cost_usd": 0.01639,
+      "wall_s": 354.7
+    },
+    "post_fix_suite": {
+      "before_fix": {
+        "passed": 33,
+        "failed": 21
+      },
+      "after_geocell_fixes": {
+        "passed": 45,
+        "failed": 9
+      }
+    }
+  },
+  "rows": [
+    {
+      "bug": "auth-cmp-3",
+      "group": "auth_inverted_compare",
+      "category": "auth",
+      "geocell_ms": 9.49,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "auth-cmp-1",
+      "resonance": 1.086
+    },
+    {
+      "bug": "auth-exp-3",
+      "group": "auth_flipped_expiry",
+      "category": "auth",
+      "geocell_ms": 2.79,
+      "geocell_proposed_but_failed": true,
+      "llm_s": 7.43,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "auth-role-3",
+      "group": "auth_inverted_role",
+      "category": "auth",
+      "geocell_ms": 2.6,
+      "geocell_proposed_but_failed": true,
+      "llm_s": 18.38,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "auth-tok-3",
+      "group": "auth_inverted_presence",
+      "category": "auth",
+      "geocell_ms": 2.47,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "auth-tok-1",
+      "resonance": 0.933
+    },
+    {
+      "bug": "route-4",
+      "group": "route_strip",
+      "category": "api_routing",
+      "geocell_ms": 2.43,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "route-1",
+      "resonance": 0.912
+    },
+    {
+      "bug": "route-5",
+      "group": "route_strip",
+      "category": "api_routing",
+      "geocell_ms": 2.32,
+      "geocell_proposed_but_failed": true,
+      "llm_s": 4.98,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "type-parse-4",
+      "group": "type_int_coerce",
+      "category": "type_errors",
+      "geocell_ms": 2.16,
+      "geocell_proposed_but_failed": true,
+      "llm_s": 5.25,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "type-parse-5",
+      "group": "type_int_coerce",
+      "category": "type_errors",
+      "geocell_ms": 1.99,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "type-parse-1",
+      "resonance": 0.843
+    },
+    {
+      "bug": "type-key-4",
+      "group": "type_str_concat",
+      "category": "type_errors",
+      "geocell_ms": 1.91,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "type-key-2",
+      "resonance": 1.141
+    },
+    {
+      "bug": "type-key-5",
+      "group": "type_str_concat",
+      "category": "type_errors",
+      "geocell_ms": 1.85,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "type-key-2",
+      "resonance": 1.141
+    },
+    {
+      "bug": "cfg-5",
+      "group": "config_keyerror",
+      "category": "config",
+      "geocell_ms": 1.44,
+      "llm_s": 4.53,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "cfg-6",
+      "group": "config_keyerror",
+      "category": "config",
+      "geocell_ms": 1.46,
+      "llm_s": 5.25,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "cfg-7",
+      "group": "config_keyerror",
+      "category": "config",
+      "geocell_ms": 1.96,
+      "llm_s": 5.37,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "cfg-8",
+      "group": "config_keyerror",
+      "category": "config",
+      "geocell_ms": 1.71,
+      "llm_s": 3.78,
+      "origin": "llm",
+      "fixed": true,
+      "llm_call": true
+    },
+    {
+      "bug": "db-where-3",
+      "group": "db_ignored_param",
+      "category": "database",
+      "geocell_ms": 1.48,
+      "llm_s": 5.78,
+      "origin": "llm",
+      "fixed": false,
+      "llm_call": true
+    },
+    {
+      "bug": "dep-ceil-3",
+      "group": "dep_floor_div",
+      "category": "dependency",
+      "geocell_ms": 3.39,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-ceil-2",
+      "resonance": 0.873
+    },
+    {
+      "bug": "dep-ceil-4",
+      "group": "dep_floor_div",
+      "category": "dependency",
+      "geocell_ms": 2.44,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-ceil-1",
+      "resonance": 0.879
+    },
+    {
+      "bug": "dep-json-3",
+      "group": "dep_json_sort",
+      "category": "dependency",
+      "geocell_ms": 4.2,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-json-2",
+      "resonance": 1.126
+    },
+    {
+      "bug": "dep-json-4",
+      "group": "dep_json_sort",
+      "category": "dependency",
+      "geocell_ms": 2.52,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-json-2",
+      "resonance": 1.037
+    },
+    {
+      "bug": "dep-hash-3",
+      "group": "dep_weak_hash",
+      "category": "dependency",
+      "geocell_ms": 2.63,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-hash-1",
+      "resonance": 0.998
+    },
+    {
+      "bug": "dep-sort-3",
+      "group": "dep_extra_reverse",
+      "category": "dependency",
+      "geocell_ms": 2.69,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "dep-sort-2",
+      "resonance": 1.008
+    }
+  ],
+  "probes": {
+    "fake_stdlib_attr": {
+      "quarantined": true,
+      "reason": "unknown_reference: hmac.safe_equals"
+    },
+    "invented_module": {
+      "quarantined": true,
+      "reason": "unknown_import: suprsecure"
+    },
+    "undefined_helper_import": {
+      "quarantined": true,
+      "reason": "unknown_import: utils"
+    },
+    "fake_hashlib_algo": {
+      "quarantined": true,
+      "reason": "unknown_reference: hashlib.sha9000"
+    },
+    "syntax_error": {
+      "quarantined": true,
+      "reason": "syntax_error: expected ':'"
+    }
+  }
+}

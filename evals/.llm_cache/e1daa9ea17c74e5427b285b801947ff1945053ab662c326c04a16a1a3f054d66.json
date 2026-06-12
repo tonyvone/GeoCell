@@ -1,0 +1,1 @@
+{"text": "def parse_quantity(raw) -> int:\n    return int(raw)", "wall_s": 4.188674796000214}

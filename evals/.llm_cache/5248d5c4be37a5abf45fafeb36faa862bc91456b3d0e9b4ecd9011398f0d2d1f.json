@@ -1,0 +1,1 @@
+{"text": "def token_expired(now: float, expires: float) -> bool:\n    if now >= expires:\n        return True\n    return False", "wall_s": 5.440110084000025}

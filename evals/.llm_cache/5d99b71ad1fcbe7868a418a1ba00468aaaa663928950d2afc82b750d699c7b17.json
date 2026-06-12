@@ -1,0 +1,1 @@
+{"text": "def serialize_user(record: dict) -> str:\n    return json.dumps(record, sort_keys=True)", "wall_s": 4.284401106000132}

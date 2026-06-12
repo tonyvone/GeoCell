@@ -1,0 +1,1 @@
+{"text": "def get_pool_size(settings: dict) -> int:\n    return settings.get(\"pool_size\", 5)", "wall_s": 3.784276905999832}

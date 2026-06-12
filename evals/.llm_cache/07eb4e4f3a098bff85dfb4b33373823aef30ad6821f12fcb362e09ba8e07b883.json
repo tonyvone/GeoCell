@@ -1,0 +1,1 @@
+{"text": "def serialize_event(record: dict) -> str:\n    return json.dumps(record, sort_keys=True)", "wall_s": 3.6095736070001294}

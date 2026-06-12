@@ -1,0 +1,1 @@
+{"text": "def ensure_admin_for_delete(role: str) -> None:\n    if role != \"admin\":\n        raise PermissionError(\"delete requires admin\")", "wall_s": 6.023199366999961}

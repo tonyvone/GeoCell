@@ -1,0 +1,1 @@
+{"text": "def ensure_admin_for_export(role: str) -> None:\n    if role != \"admin\":\n        raise PermissionError(\"export requires admin\")", "wall_s": 18.376740358000006}

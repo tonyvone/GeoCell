@@ -1,0 +1,1 @@
+{"text": "def require_token(token: str) -> None:\n    if not token:\n        raise PermissionError(\"missing token\")", "wall_s": 5.156064507999872}

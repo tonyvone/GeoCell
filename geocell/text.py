@@ -26,12 +26,18 @@ HISTORICAL_WORDS = {"old", "previous", "previously", "original", "originally", "
 NUMERIC_QUERY_WORDS = {"budget", "price", "amount", "rate", "revenue", "score", "much", "many"}
 
 # Lookbehind keeps digits inside alphanumeric tokens (X1, B2B) from
-# registering as numeric claims.
-_NUMBER_RE = re.compile(r"(?<![a-zA-Z0-9.])\$?\d+(?:\.\d+)?\s?(?:m|b|k|million|billion|%|percent)?")
+# registering as numeric claims. Handles thousands separators ($500,000)
+# and a trailing magnitude unit, but never swallows a following letter
+# (so "$800,000 by" does not capture the "b").
+_NUMBER_RE = re.compile(
+    r"(?<![a-zA-Z0-9.])\$?\d+(?:,\d{3})*(?:\.\d+)?(?:\s?(?:million|billion|percent)|[mbk%])?(?![a-zA-Z])"
+)
 
 _RELATION_PATTERNS: List[Tuple[str, re.Pattern]] = [
     ("part_of", re.compile(r"^(.{2,}?)\s+(?:is|are)\s+(?:a\s+|an\s+)?part\s+of\s+(.{2,})$", re.IGNORECASE)),
+    ("part_of", re.compile(r"^(.{2,}?)\s+belongs?\s+to\s+(.{2,})$", re.IGNORECASE)),
     ("depends_on", re.compile(r"^(.{2,}?)\s+depends?\s+on\s+(.{2,})$", re.IGNORECASE)),
+    ("depends_on", re.compile(r"^(.{2,}?)\s+(?:relies?|rely)\s+on\s+(.{2,})$", re.IGNORECASE)),
     ("requires", re.compile(r"^(.{2,}?)\s+requires?\s+(.{2,})$", re.IGNORECASE)),
 ]
 
@@ -43,6 +49,25 @@ def stable_hash(text: str) -> int:
         h ^= b
         h = (h * 1099511628211) & 0xFFFFFFFFFFFFFFFF
     return h
+
+
+_SUFFIXES = ("ingly", "edly", "ing", "ned", "ned", "ied", "ies", "ed", "es", "er", "ly", "s")
+
+
+def stem(token: str) -> str:
+    """Conservative suffix stripping so morphological variants share a
+    feature: owns/owned/owner -> own, relies/relied -> reli. Purely
+    additive (used for similarity co-features), never replaces the raw
+    token that relation/negation/value logic depends on."""
+    if len(token) < 4 or not token.isalpha():
+        return token
+    for suf in _SUFFIXES:
+        if token.endswith(suf) and len(token) - len(suf) >= 3:
+            base = token[: -len(suf)]
+            if base.endswith("i") and suf in ("ed", "es"):
+                base = base[:-1] + "y"
+            return base
+    return token
 
 
 def raw_words(text: str) -> List[str]:
@@ -57,7 +82,7 @@ def tokenize(text: str) -> List[str]:
 
 
 def normalize_number(raw: str) -> Optional[float]:
-    s = raw.lower().replace("$", "").strip()
+    s = raw.lower().replace("$", "").replace(",", "").strip()
     multiplier = 1.0
     if "billion" in s or s.endswith("b"):
         multiplier = 1_000_000_000.0

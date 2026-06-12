@@ -1,0 +1,1 @@
+{"text": "def cache_key_session(prefix: str, ident) -> str:\n    return prefix + str(ident)", "wall_s": 4.8401565249996565}

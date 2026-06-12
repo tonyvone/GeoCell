@@ -18,6 +18,7 @@ from geocell.text import (
     extract_relations,
     extract_subject,
     stable_hash,
+    stem,
     tokenize,
 )
 
@@ -37,6 +38,11 @@ def encode(text: str, dims: int) -> np.ndarray:
     # Surface features: unigrams, bigrams, trigrams.
     for i, tok in enumerate(toks):
         v[_slot("tok:" + tok, dims)] += _sign("tok:" + tok)
+        # Stemmed co-feature: morphological variants (owns/owned/owner)
+        # share this slot, so a query verb resonates with a doc's verb.
+        st = stem(tok)
+        if st != tok:
+            v[_slot("stem:" + st, dims)] += _sign("stem:" + st)
         if i + 1 < len(toks):
             pair = "pair:" + tok + "::" + toks[i + 1]
             v[_slot(pair, dims)] += 0.55 * _sign(pair)

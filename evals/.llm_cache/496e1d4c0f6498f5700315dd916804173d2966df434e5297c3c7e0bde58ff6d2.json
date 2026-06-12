@@ -1,0 +1,1 @@
+{"text": "def batch_count(total: int, per_batch: int) -> int:\n    return (total + per_batch - 1) // per_batch", "wall_s": 9.249632320999808}

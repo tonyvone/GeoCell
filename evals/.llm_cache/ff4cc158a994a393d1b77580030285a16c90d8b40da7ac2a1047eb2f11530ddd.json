@@ -1,0 +1,1 @@
+{"text": "def checksum_file(data: bytes) -> str:\n    return hashlib.sha256(data).hexdigest()", "wall_s": 4.8273414199998115}

@@ -1,0 +1,1 @@
+{"text": "def parse_offset(raw) -> int:\n    return int(raw)", "wall_s": 5.25137501800009}

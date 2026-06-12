@@ -1,0 +1,1 @@
+{"text": "def newest_first(items: list) -> list:\n    return sorted(items, key=lambda r: r[\"ts\"], reverse=True)", "wall_s": 4.425407750999966}

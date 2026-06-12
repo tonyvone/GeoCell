@@ -1,0 +1,1 @@
+{"text": "def verify_api_key(service: str, supplied_key: str) -> bool:\n    stored = API_KEYS.get(service, \"\")\n    if hmac.compare_digest(stored, supplied_key):\n        return True\n    return False", "wall_s": 8.207254114999614}

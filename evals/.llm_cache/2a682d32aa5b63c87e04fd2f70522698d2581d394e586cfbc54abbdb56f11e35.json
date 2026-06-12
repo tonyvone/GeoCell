@@ -1,0 +1,1 @@
+{"text": "def normalize_invoice_path(path: str) -> str:\n    return path.rstrip(\"/\")", "wall_s": 4.978171489000033}

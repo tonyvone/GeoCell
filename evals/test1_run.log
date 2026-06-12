@@ -1,0 +1,90 @@
+[split] 34 train bugs, 22 near-repeat test bugs
+[train] learned 29 generalized fixes from 34 bugs (199.9s)
+
+=== TEST 1 RESULTS ===
+{
+  "test_bugs": 21,
+  "fixed_by_geocell_no_llm": 12,
+  "geocell_no_llm_rate": 0.571,
+  "fixed_by_llm_fallback": 8,
+  "total_fixed": 20,
+  "overall_fix_rate": 0.952,
+  "llm_calls_in_test_phase": 9,
+  "llm_calls_avoided_by_geocell": 12,
+  "call_reduction_vs_llm_only": 0.571,
+  "avg_geocell_latency_ms": 2.66,
+  "avg_llm_latency_s": 6.75,
+  "speedup_x": 2537.6,
+  "geocell_quarantines": 0,
+  "llm_fix_quarantines": 0,
+  "hallucination_probes_caught": 5,
+  "hallucination_probes_total": 5,
+  "baseline_llm_only": {
+    "fixed": 20,
+    "total": 22,
+    "wall_s": 108.2
+  },
+  "llm_report": {
+    "live_calls": 58,
+    "cache_hits": 3,
+    "est_cost_usd": 0.01639,
+    "wall_s": 354.7
+  },
+  "post_fix_suite": {
+    "before_fix": {
+      "passed": 33,
+      "failed": 21
+    },
+    "after_geocell_fixes": {
+      "passed": 45,
+      "failed": 9
+    }
+  }
+}
+
+--- hallucination gate ---
+{
+  "fake_stdlib_attr": {
+    "quarantined": true,
+    "reason": "unknown_reference: hmac.safe_equals"
+  },
+  "invented_module": {
+    "quarantined": true,
+    "reason": "unknown_import: suprsecure"
+  },
+  "undefined_helper_import": {
+    "quarantined": true,
+    "reason": "unknown_import: utils"
+  },
+  "fake_hashlib_algo": {
+    "quarantined": true,
+    "reason": "unknown_reference: hashlib.sha9000"
+  },
+  "syntax_error": {
+    "quarantined": true,
+    "reason": "syntax_error: expected ':'"
+  }
+}
+
+--- per-bug ---
+  auth-cmp-3     geocell                fixed=True via=auth-cmp-1 res=1.086
+  auth-exp-3     llm                    fixed=True via=- res=-
+  auth-role-3    llm                    fixed=True via=- res=-
+  auth-tok-3     geocell                fixed=True via=auth-tok-1 res=0.933
+  route-4        geocell                fixed=True via=route-1 res=0.912
+  route-5        llm                    fixed=True via=- res=-
+  type-parse-4   llm                    fixed=True via=- res=-
+  type-parse-5   geocell                fixed=True via=type-parse-1 res=0.843
+  type-key-4     geocell                fixed=True via=type-key-2 res=1.141
+  type-key-5     geocell                fixed=True via=type-key-2 res=1.141
+  cfg-5          llm                    fixed=True via=- res=-
+  cfg-6          llm                    fixed=True via=- res=-
+  cfg-7          llm                    fixed=True via=- res=-
+  cfg-8          llm                    fixed=True via=- res=-
+  db-where-3     llm                    fixed=False via=- res=-
+  dep-ceil-3     geocell                fixed=True via=dep-ceil-2 res=0.873
+  dep-ceil-4     geocell                fixed=True via=dep-ceil-1 res=0.879
+  dep-json-3     geocell                fixed=True via=dep-json-2 res=1.126
+  dep-json-4     geocell                fixed=True via=dep-json-2 res=1.037
+  dep-hash-3     geocell                fixed=True via=dep-hash-1 res=0.998
+  dep-sort-3     geocell                fixed=True via=dep-sort-2 res=1.008

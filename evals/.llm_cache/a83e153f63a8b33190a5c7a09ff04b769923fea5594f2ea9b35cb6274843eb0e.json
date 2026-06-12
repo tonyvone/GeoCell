@@ -1,0 +1,1 @@
+{"text": "def get_event(self, event_id: int):\n    cur = self.conn.cursor()\n    params = (event_id,)\n    cur.execute(\"SELECT id, kind FROM events WHERE id = ?\", params)\n    return cur.fetchone()", "wall_s": 5.780467266999949}

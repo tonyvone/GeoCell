@@ -1,0 +1,1 @@
+{"text": "def require_admin(role: str) -> None:\n    if role != \"admin\":\n        raise PermissionError(\"admin required\")", "wall_s": 5.9970970399999715}

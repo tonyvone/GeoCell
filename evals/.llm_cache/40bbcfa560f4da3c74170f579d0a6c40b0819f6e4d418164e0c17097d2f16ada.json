@@ -1,0 +1,1 @@
+{"text": "def serialize_order(record: dict) -> str:\n    return json.dumps(record, sort_keys=True)", "wall_s": 4.245520644999942}
