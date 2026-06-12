@@ -7,6 +7,7 @@ from typing import Any, Dict, Tuple
 from geocell import __version__
 from geocell.demo import load_demo, run_benchmark
 from geocell.field import GeoCellField
+from geocell.synthesis import brief
 
 HELP = """Commands:
   demo                          load the demo corpus
@@ -18,13 +19,16 @@ HELP = """Commands:
   path <start> => <end>         trust-weighted route between two memories
   inspect <id>                  cell + neighborhood
   why <id>                      epistemic ledger + trust breakdown
+  brief <query>                 synthesized multi-fact answer with citations (no LLM)
+  quantize                      switch to the 96-bytes-per-memory serving index
   infer                         run defeasible inference (writes hypotheses)
   settle                        relax the field geometry
   trust                         propagate trust to a fixed point
   sleep                         consolidate clusters into concept cells
   stats                         field overview
   benchmark                     fresh-field QA + structural self-test
-  save <path> / load <path>     persistence
+  save <path> / load <path>     persistence (full float geometry)
+  savec <path> / loadc <path>   compact binary snapshot (sign signatures)
   help / quit
 """
 
@@ -76,6 +80,18 @@ def cli() -> None:
                 print_json(mem.recall(line.replace("recall", "", 1).strip()))
             elif line.startswith("ask "):
                 print_json(mem.ask(line.replace("ask", "", 1).strip()))
+            elif line.startswith("brief "):
+                out = brief(mem, line.replace("brief", "", 1).strip())
+                print(out.pop("brief"))
+                print_json(out)
+            elif cmd == "quantize":
+                print_json(mem.quantize())
+            elif line.startswith("savec "):
+                print_json(mem.save_compact(line.split(maxsplit=1)[1]))
+            elif line.startswith("loadc "):
+                path = line.split(maxsplit=1)[1]
+                mem = GeoCellField.load_compact(path)
+                print(f"Loaded {len(mem.cells)} cells (quantized) from {path}")
             elif line.startswith("contradictions"):
                 print_json(mem.contradictions(line.replace("contradictions", "", 1).strip()))
             elif line.startswith("timeline "):

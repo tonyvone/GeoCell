@@ -1,4 +1,4 @@
-# GeoCell Field v0.3
+# GeoCell Field v0.4
 
 A local, CPU-only **epistemic memory engine**. No neural network, no training,
 no API calls — just deterministic geometry, graph dynamics, and belief revision.
@@ -18,7 +18,7 @@ python -m geocell          # or: python geocell_lab.py
 ```
 
 ```bash
-pip install pytest && python -m pytest tests/   # 28 tests
+pip install pytest && python -m pytest tests/   # 37 tests
 ```
 
 ## Quick test
@@ -81,6 +81,46 @@ automatically *retracted* the moment they contradict observed evidence.
 merge into concept cells at the cluster centroid — abstractions used for
 navigation and spreading, never as direct answers.
 
+## v0.4: the geometry serves (LLM replacement & enhancement layer)
+
+**Briefings without a language model.** `brief <query>` composes a
+multi-fact, citation-grounded mini-report directly from the field's
+epistemic structure: the lead claim is *hedged according to its propagated
+trust* (geometry decides the wording), inferred conclusions carry their
+derivation, disputes are presented as disputes, displaced history is
+narrated. Deterministic, milliseconds, zero tokens.
+
+**96 bytes per memory.** `quantize` snaps every position and anchor to a
+SimHash sign signature: 768 floats (3 KB) become 96 bytes — a measured
+32× smaller serving index with benchmark accuracy preserved (queries are
+scored asymmetrically at full precision against the quantized cells).
+`savec`/`loadc` write a compact snapshot that also prunes the support
+lattice to its epistemic skeleton (every contradiction and derivation
+edge kept, only the strongest support links). Measured on a 400-cell
+field: 17.4 MB → 488 KB on disk (36×), recall 14× faster. A snapshot
+loads back *alive*: new evidence still wires, contests, and supersedes.
+
+**GeoOracle: the cache that argues back.** Wrap any `llm(prompt) -> str`
+callable in `GeoOracle(field, llm)`. Resonant queries are answered from
+geometry at zero cost; novel queries escalate to the LLM and the answer
+is absorbed into the field, so the hit rate climbs. Because LLM answers
+enter the belief lifecycle like any memory, an answer that contradicts
+higher-trust memory is **superseded on arrival** — the oracle returns the
+stronger belief, flags the LLM claim as quarantined, and keeps the full
+audit trail. A deterministic hallucination tripwire, no judge model.
+
+```python
+from geocell import GeoCellField
+from geocell.oracle import GeoOracle
+
+oracle = GeoOracle(field, llm=my_llm_callable)
+out = oracle.query("Orion spending plan total?")
+# => {"origin": "field_override", "quarantined": True,
+#     "answer": "Project Orion budget was revised to $2.7 million.",
+#     "llm_claim": "Project Orion budget is $9 million.", ...}
+oracle.report()   # hit rate, cost avoided, quarantine count
+```
+
 ## What `ask` returns
 
 Not just an answer: the **belief status** of the answer, its propagated trust,
@@ -91,9 +131,10 @@ reasoning chain back to observed sources.
 ## Commands
 
 `demo` · `ingest <fact> | source= | date= | confidence= | authority=` ·
-`recall` · `ask` · `contradictions` · `timeline <subject>` ·
+`recall` · `ask` · `brief` · `contradictions` · `timeline <subject>` ·
 `path <a> => <b>` · `inspect <id>` · `why <id>` · `infer` · `settle` ·
-`trust` · `sleep` · `stats` · `benchmark` · `save/load <path>` · `quit`
+`trust` · `sleep` · `quantize` · `stats` · `benchmark` ·
+`save/load <path>` · `savec/loadc <path>` · `quit`
 
 ## Benchmark
 

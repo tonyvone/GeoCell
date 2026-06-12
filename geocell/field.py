@@ -22,6 +22,7 @@ The engine treats memory as physics:
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import asdict
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -41,6 +42,15 @@ from geocell.cell import (
     SUPERSEDED,
     SUPPORT,
     UNKNOWN,
+)
+from geocell.compress import (
+    asymmetric_similarity,
+    decode_b64,
+    encode_b64,
+    hamming_similarity,
+    index_footprint,
+    pack_signs,
+    unpack_signs,
 )
 from geocell.encoding import cosine, encode
 from geocell.text import (
@@ -68,6 +78,13 @@ class GeoCellField:
         self._trust_trace: Dict[int, Dict[str, float]] = {}
         self._trust_dirty = True
         self._anchors: Dict[int, np.ndarray] = {}
+        self.quantized = False
+        self._bits_pos = np.zeros((0, dims // 8), dtype=np.uint8)
+        self._bits_anchor = np.zeros((0, dims // 8), dtype=np.uint8)
+        # True when loaded from a compact snapshot: float positions are
+        # rotated-space placeholders, so all similarity must use bits and
+        # settle must first re-derive geometry from the lexical anchors.
+        self._serving_only = False
 
     def _anchor(self, c: GeoCell) -> np.ndarray:
         """The cell's lexical anchor: the deterministic encoding of its
@@ -109,6 +126,9 @@ class GeoCellField:
         for pid in cell.parents:
             self.graph.add_edge(cell.id, pid, state=SUPPORT, weight=0.9,
                                 reason="derivation", resolved=False)
+        if self.quantized:
+            self._bits_pos = np.vstack([self._bits_pos, pack_signs(pos)])
+            self._bits_anchor = np.vstack([self._bits_anchor, pack_signs(self._anchor(cell))])
         self._wire(cell)
         self._trust_dirty = True
         return cell.id
@@ -132,8 +152,14 @@ class GeoCellField:
         tb = set(tokenize(b.content)) - NEGATORS
         return len(ta & tb) / max(1, min(len(ta), len(tb)))
 
+    def _pair_sim(self, a: GeoCell, b: GeoCell) -> float:
+        if self.quantized and max(a.id, b.id) < len(self._bits_pos):
+            return float(hamming_similarity(self._bits_pos[a.id],
+                                            self._bits_pos[[b.id]], self.dims)[0])
+        return cosine(np.array(a.position, dtype=np.float32), np.array(b.position, dtype=np.float32))
+
     def _relation(self, a: GeoCell, b: GeoCell) -> Tuple[int, float, str]:
-        sim = cosine(np.array(a.position, dtype=np.float32), np.array(b.position, dtype=np.float32))
+        sim = self._pair_sim(a, b)
         same_subject = self._subject_overlap(a.subject, b.subject) >= 0.99
         # Differing numbers only conflict when the sentences describe the
         # same quantity: "Orion budget is $2M" vs "Orion headcount is 50"
@@ -314,8 +340,14 @@ class GeoCellField:
         n = len(self.cells)
         if n < 2:
             return {"steps": 0, "displacement": 0.0}
-        P = np.array([c.position for c in self.cells], dtype=np.float64)
         anchors = np.array([self._anchor(c) for c in self.cells], dtype=np.float64)
+        if self._serving_only:
+            # Snapshot positions are serving placeholders; re-derive real
+            # geometry from the lexical anchors before relaxing.
+            P = anchors.copy()
+            self._serving_only = False
+        else:
+            P = np.array([c.position for c in self.cells], dtype=np.float64)
         degree = np.array([max(1, self.graph.degree(i)) for i in range(n)], dtype=np.float64)
         start = P.copy()
         for _ in range(steps):
@@ -338,6 +370,8 @@ class GeoCellField:
         displacement = float(np.linalg.norm(P - start, axis=1).mean())
         for i, c in enumerate(self.cells):
             c.position = P[i].tolist()
+            if self.quantized:
+                self._bits_pos[i] = pack_signs(P[i])
             sup = sum(1 for j in self.graph.neighbors(i) if self.graph.edges[i, j].get("state") == SUPPORT)
             con = sum(1 for j in self.graph.neighbors(i)
                       if self.graph.edges[i, j].get("state") == CONTRADICTION and not self.graph.edges[i, j].get("resolved"))
@@ -368,11 +402,18 @@ class GeoCellField:
         status_weight = _STATUS_WEIGHT_HISTORICAL if historical else _STATUS_WEIGHT
 
         # Resonance blends the lexical anchor (what the memory says) with
-        # the settled position (where the evidence moved it).
+        # the settled position (where the evidence moved it). In quantized
+        # mode both are 96-byte sign signatures compared via XOR+popcount.
+        if self.quantized:
+            sims = 0.65 * asymmetric_similarity(q, self._bits_anchor, self.dims) + \
+                   0.35 * asymmetric_similarity(q, self._bits_pos, self.dims)
         base = np.zeros(len(self.cells), dtype=np.float64)
         for c in self.cells:
-            sim = 0.65 * cosine(q, self._anchor(c)) + \
-                  0.35 * cosine(q, np.array(c.position, dtype=np.float32))
+            if self.quantized:
+                sim = float(sims[c.id])
+            else:
+                sim = 0.65 * cosine(q, self._anchor(c)) + \
+                      0.35 * cosine(q, np.array(c.position, dtype=np.float32))
             subject_terms = set(c.subject.split())
             if subject_terms and subject_terms <= qtoks:
                 bonus = 0.16
@@ -452,7 +493,9 @@ class GeoCellField:
                                    for t in extract_relations(self.cells[h["id"]].content))]
                 if rel_hits:
                     candidates = rel_hits
-        best = max(candidates, key=lambda h: (h["resonance"], h["trust"], h["date"] or "0000-00-00"))
+        # Resonance ranked at 2-decimal granularity: among near-ties the
+        # belief layer (trust, recency) decides, not encoding jitter.
+        best = max(candidates, key=lambda h: (round(h["resonance"], 2), h["trust"], h["date"] or "0000-00-00"))
         cell = self.cells[best["id"]]
 
         confidence = min(0.99, max(0.05, best["resonance"] * 0.45 + cell.trust * 0.55))
@@ -661,6 +704,109 @@ class GeoCellField:
             "by_kind": by_kind,
             "open_contradictions": open_conflicts,
         }
+
+    # ------------------------------------------------------------------
+    # Quantization: the 96-bytes-per-memory serving form
+    # ------------------------------------------------------------------
+
+    def quantize(self) -> Dict[str, Any]:
+        """Freeze the field for serving: every position and anchor is
+        snapped to its sign pattern and recall switches to Hamming
+        similarity over packed bits. Lossless for the belief layer
+        (graph, statuses, trust); near-lossless for ranking."""
+        n = len(self.cells)
+        self._bits_pos = np.zeros((n, self.dims // 8), dtype=np.uint8)
+        self._bits_anchor = np.zeros((n, self.dims // 8), dtype=np.uint8)
+        for c in self.cells:
+            self._bits_pos[c.id] = pack_signs(np.array(c.position, dtype=np.float32))
+            self._bits_anchor[c.id] = pack_signs(self._anchor(c))
+        self.quantized = True
+        float_b, bin_b, ratio = index_footprint(n, self.dims)
+        return {"cells": n, "index_bytes_float32": float_b,
+                "index_bytes_binary": bin_b, "compression": round(ratio, 1)}
+
+    def _skeleton_edges(self, max_support_degree: int) -> List[Tuple[int, int, Dict[str, Any]]]:
+        """The epistemic skeleton: every contradiction and derivation edge,
+        plus each node's strongest support edges. The dense support lattice
+        is redundant for serving — spreading activation only needs the
+        strong links."""
+        keep: Set[Tuple[int, int]] = set()
+        per_node: Dict[int, List[Tuple[float, int, int]]] = {}
+        out = []
+        for u, v, d in self.graph.edges(data=True):
+            if d.get("state") != SUPPORT or d.get("reason") == "derivation":
+                keep.add((u, v))
+                continue
+            w = float(d.get("weight", 0.0))
+            per_node.setdefault(u, []).append((w, u, v))
+            per_node.setdefault(v, []).append((w, u, v))
+        for ranked in per_node.values():
+            ranked.sort(reverse=True)
+            for w, u, v in ranked[:max_support_degree]:
+                keep.add((u, v))
+        for u, v, d in self.graph.edges(data=True):
+            if (u, v) in keep:
+                out.append((u, v, d))
+        return out
+
+    def save_compact(self, path: str, max_support_degree: int = 16) -> Dict[str, Any]:
+        """Binary snapshot: cells keep text + provenance + lifecycle, but
+        geometry is stored as base64 sign signatures and the support
+        lattice is pruned to its skeleton. Loads back as a quantized
+        (serving) field. Non-destructive: the in-memory field keeps its
+        full float geometry and full graph."""
+        if not self.quantized:
+            self.quantize()
+        cells = []
+        for c in self.cells:
+            d = asdict(c)
+            d.pop("position")
+            d["bits_pos"] = encode_b64(self._bits_pos[c.id])
+            d["bits_anchor"] = encode_b64(self._bits_anchor[c.id])
+            cells.append(d)
+        edges = self._skeleton_edges(max_support_degree)
+        reasons = sorted({d.get("reason", "") for _, _, d in edges})
+        reason_id = {r: i for i, r in enumerate(reasons)}
+        data = {
+            "version": 4, "format": "compact", "dims": self.dims,
+            "support_threshold": self.support_threshold,
+            "cells": cells,
+            "edge_reasons": reasons,
+            "edges_packed": [[u, v, d.get("state", 0), round(float(d.get("weight", 0.0)), 3),
+                              reason_id[d.get("reason", "")], int(bool(d.get("resolved")))]
+                             for u, v, d in edges],
+        }
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, separators=(",", ":"))
+        return {"path": path, "bytes": os.path.getsize(path),
+                "edges_kept": len(edges), "edges_total": self.graph.number_of_edges()}
+
+    @classmethod
+    def load_compact(cls, path: str) -> "GeoCellField":
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        mem = cls(dims=data["dims"], support_threshold=data.get("support_threshold", 0.10))
+        n = len(data["cells"])
+        mem._bits_pos = np.zeros((n, mem.dims // 8), dtype=np.uint8)
+        mem._bits_anchor = np.zeros((n, mem.dims // 8), dtype=np.uint8)
+        for raw in data["cells"]:
+            bits_pos = decode_b64(raw.pop("bits_pos"))
+            bits_anchor = decode_b64(raw.pop("bits_anchor"))
+            raw["position"] = unpack_signs(bits_pos, mem.dims).tolist()
+            cell = GeoCell(**raw)
+            mem.cells.append(cell)
+            mem.graph.add_node(cell.id)
+            mem._bits_pos[cell.id] = bits_pos
+            mem._bits_anchor[cell.id] = bits_anchor
+            mem._anchors[cell.id] = unpack_signs(bits_anchor, mem.dims)
+        reasons = data.get("edge_reasons", [])
+        for u, v, state, weight, rid, resolved in data.get("edges_packed", []):
+            mem.graph.add_edge(u, v, state=state, weight=weight,
+                               reason=reasons[rid], resolved=bool(resolved))
+        mem.quantized = True
+        mem._serving_only = True
+        mem._trust_dirty = True
+        return mem
 
     # ------------------------------------------------------------------
     # Persistence
