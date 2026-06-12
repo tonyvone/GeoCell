@@ -1,0 +1,69 @@
+
+====================================================================
+1. Per-query energy: LLM vs GeoCell-served
+====================================================================
+  GeoCell served answer @ 4 ms CPU (25.0 W, PUE 1.2): 0.0333 mWh = 0.000033 Wh
+  GeoCell served answer @ 50 ms CPU (25.0 W, PUE 1.2): 0.4167 mWh = 0.000417 Wh
+  LLM query (median text):   0.24 Wh
+  LLM query (avg):           0.34 Wh
+  LLM query (heavy RAG/agent): 5.0 Wh
+  => a deflected query uses ~7,200x to ~12,000x less energy than the LLM call it replaces
+
+====================================================================
+2. Net energy reduction on a served workload
+====================================================================
+  Conservative (0.24 Wh, 40% deflect, full path)
+      net energy reduction on workload: 39.9%
+  Measured (0.34 Wh, 69% deflect, full path)
+      net energy reduction on workload: 68.9%
+  Heavy workload (5.0 Wh, 69% deflect, quantized)
+      net energy reduction on workload: 69.0%
+
+====================================================================
+3. Single high-volume product (1M grounded queries/day)
+====================================================================
+  Conservative (0.24 Wh, 40% deflect, full path)
+      saved/year: 34.98 MWh  (~12 US homes-equiv at 3 MWh/home/yr)
+  Measured (0.34 Wh, 69% deflect, full path)
+      saved/year: 85.52 MWh  (~29 US homes-equiv at 3 MWh/home/yr)
+  Heavy workload (5.0 Wh, 69% deflect, quantized)
+      saved/year: 1.26 GWh  (~420 US homes-equiv at 3 MWh/home/yr)
+
+====================================================================
+4. Market-scale illustration (ChatGPT-volume, grounded fraction)
+====================================================================
+  @ 0.24 Wh/query, 50% grounded, 40% deflection:
+      deflected: 0.50 B queries/day
+      energy saved: 0.04 TWh/year (~0.01% of 2025 data-center electricity)
+  @ 0.34 Wh/query, 50% grounded, 40% deflection:
+      deflected: 0.50 B queries/day
+      energy saved: 0.06 TWh/year (~0.01% of 2025 data-center electricity)
+
+====================================================================
+4b. TOP-DOWN MARKET ENERGY IMPACT (the headline number)
+====================================================================
+  2025: data-center 485 TWh -> AI 58 TWh -> inference 32 TWh -> GeoCell-addressable 12.8 TWh
+        40% deflect, 10% adoption: save 0.5 TWh/yr (0.11% of all DC power; ~0.2M US homes)
+        40% deflect, 50% adoption: save 2.6 TWh/yr (0.53% of all DC power; ~0.9M US homes)
+        40% deflect, 100% adoption: save 5.1 TWh/yr (1.06% of all DC power; ~1.7M US homes)
+        69% deflect, 10% adoption: save 0.9 TWh/yr (0.18% of all DC power; ~0.3M US homes)
+        69% deflect, 50% adoption: save 4.4 TWh/yr (0.91% of all DC power; ~1.5M US homes)
+        69% deflect, 100% adoption: save 8.8 TWh/yr (1.82% of all DC power; ~2.9M US homes)
+  2030: data-center 950 TWh -> AI 380 TWh -> inference 209 TWh -> GeoCell-addressable 83.6 TWh
+        40% deflect, 10% adoption: save 3.3 TWh/yr (0.35% of all DC power; ~1.1M US homes)
+        40% deflect, 50% adoption: save 16.7 TWh/yr (1.76% of all DC power; ~5.6M US homes)
+        40% deflect, 100% adoption: save 33.4 TWh/yr (3.52% of all DC power; ~11.1M US homes)
+        69% deflect, 10% adoption: save 5.8 TWh/yr (0.61% of all DC power; ~1.9M US homes)
+        69% deflect, 50% adoption: save 28.8 TWh/yr (3.04% of all DC power; ~9.6M US homes)
+        69% deflect, 100% adoption: save 57.7 TWh/yr (6.07% of all DC power; ~19.2M US homes)
+
+====================================================================
+5. Cost translation (illustrative)
+====================================================================
+  @ $0.001/query, 1M q/day, 69% deflect: save $251,850/year
+  @ $0.005/query, 1M q/day, 69% deflect: save $1,259,250/year
+  @ $0.020/query, 1M q/day, 69% deflect: save $5,037,000/year
+
+NOTE: ranges, not guarantees. CPU energy is attributed/estimated;
+LLM per-query energy and volume are vendor/IEA figures; deflection
+is from our synthetic benchmark. See docs/PAPER.md for caveats.
