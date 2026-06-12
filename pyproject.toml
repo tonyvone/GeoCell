@@ -1,0 +1,16 @@
+[project]
+name = "geocell"
+version = "0.3.0"
+description = "GeoCell Field: a geometry-native epistemic memory engine"
+requires-python = ">=3.9"
+dependencies = ["numpy", "networkx"]
+
+[project.scripts]
+geocell = "geocell.cli:cli"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["geocell"]
