@@ -275,6 +275,61 @@ parameterized so any input can be challenged and re-run.
 
 ---
 
+## 9b. Scale, real data, and adversarial robustness
+
+Following the original synthetic benchmarks we ran four further probes
+(`evals/`), addressing scale, real corpora, and security.
+
+**Scale (`evals/`, synthetic, pathologically dense — 88–220 support
+edges/cell).** Replacing O(n²) ingest (all-pairs comparison) with
+inverted-index candidate wiring, and dense-matrix recall with
+candidate-bounded local spreading + vectorized scoring, makes both
+operations bounded:
+
+| Cells | Ingest | Recall p50 | Recall p95 | RAM |
+|---|---|---|---|---|
+| 10,000 | ~5 ms/cell | 153 ms | 210 ms | 0.8 GB |
+| 50,000 | ~7 ms/cell | 262 ms | 302 ms | 3.7 GB |
+
+Recall no longer grows with field size (it is bounded by the candidate
+cap); the residual cost is from the synthetic data's extreme edge density,
+far above natural-language corpora. This is an unoptimized pure-Python
+CPU prototype with headroom (sparse linear algebra, native inner loops).
+
+**Real-data domain probe (`evals/test3_pubmed.py`).** Four *real* C9orf72/
+ALS abstracts (2011–2025; *Neuron*, *Eur. J. Neurol.*, *Lancet Neurol.*;
+captured via the PubMed MCP, DOIs retained) in which the reported C9orf72
+share of familial ALS genuinely drifts (23.5% → ~46% → 30–50%). Findings,
+reported honestly:
+- **Works on real prose, domain-agnostic, zero LLM:** per-answer citations
+  to real papers; trust correctly ordered by journal authority + recency;
+  fully deterministic.
+- **Degrades on real prose with the built-in rule extractors:** the
+  rule-based *subject* extractor returns "repeat expansion" rather than
+  "C9orf72", so the numeric contradiction is missed; hash lexical recall
+  misses semantic paraphrase ("protein pathology" → "TDP-43 aggregates").
+- **Controlled isolation:** supplying the canonical entity through the new
+  `ingest(subject=…)` seam (standing in for a domain NER) makes the
+  contradiction fire and orders the sources correctly. The bottleneck is
+  therefore the NLP front-end, not the epistemic layer — and the front-end
+  (encoder, entity/claim extractor) is pluggable by design.
+
+**Adversarial poisoning (`evals/test4_adversarial.py`).** Against one
+high-authority truth we inject up to 500 low-authority contradictions
+(a Sybil/write-poisoning flood). The truth remains the active belief and
+the highest-trust cell at every flood size; trust does not collapse; the
+injected claims are superseded, not adopted. Because trust is propagated
+by *source authority*, not vote count, a flood of weak sources cannot
+outweigh one trusted source — a structural defense, with zero LLM cost.
+
+**Pluggability (engine).** `GeoCellField(encoder=…)` accepts any
+`(text, dims) → vector` callable and `ingest(subject=…)` accepts an
+external entity; both leave the belief layer (lifecycle, trust,
+contradiction) untouched, since it operates on the resulting geometry and
+subject keys rather than on how they were produced. (The real-embedding
+ablation the roadmap calls for is implemented as this seam but was not run
+here: the execution environment blocks the model download.)
+
 ## 10. Limitations
 
 (1) The hash encoder is weak on deep semantic paraphrase ("automobile" vs

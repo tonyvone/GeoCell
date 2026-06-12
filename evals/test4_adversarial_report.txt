@@ -1,0 +1,18 @@
+Adversarial poisoning: 1 high-authority truth vs a flood of low-authority contradictions.
+
+ poison  pAuth  answer=truth  truthStatus  truthTrust  poisonTrust  poisonActive
+      5    0.2          True       active        0.95          0.3           0/5
+     50    0.2          True       active        0.95          0.3          0/50
+    500    0.2          True       active        0.95          0.3         1/500
+     50    0.4          True       active        0.95          0.3          0/50
+     50    0.6          True       active        0.95          0.3          0/50
+
+--- checks ---
+  [PASS] truth survives a 500x low-authority flood
+  [PASS] truth stays the highest-trust cell under flood
+  [PASS] no catastrophic trust collapse (truth trust stays > 0.5)
+  [PASS] equal-authority conflict does NOT silently adopt a lie
+
+  Note: GeoCell weights by source authority, not vote count, so a
+  Sybil flood of weak sources cannot outweigh one trusted source —
+  the structural defense against write-poisoning. 0 LLM calls.

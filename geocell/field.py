@@ -119,7 +119,13 @@ class GeoCellField:
 
     def ingest(self, content: str, source: str = "user", date: str = "",
                confidence: float = 0.75, authority: float = 0.5,
-               kind: str = OBSERVED, parents: Optional[List[int]] = None) -> int:
+               kind: str = OBSERVED, parents: Optional[List[int]] = None,
+               subject: Optional[str] = None) -> int:
+        # `subject` overrides the built-in rule-based extractor: the seam
+        # for a domain entity recognizer (NER / scispaCy / an LLM pass) to
+        # supply the canonical entity a claim is about. The lifecycle keys
+        # contradiction on the subject, so on natural prose -- where the
+        # rule extractor is weak -- a real extractor restores it.
         content = content.strip()
         pos = self._encode(content, self.dims)
         toks = set(tokenize(content))
@@ -133,7 +139,7 @@ class GeoCellField:
             date=date,
             confidence=max(0.0, min(float(confidence), 1.0)),
             authority=max(0.0, min(float(authority), 1.0)),
-            subject=extract_subject(content),
+            subject=(subject.strip().lower() if subject else extract_subject(content)),
             values=extract_claim_values(content),
             polarity=-1 if toks & NEGATORS else 1,
             revision_signal=bool(toks & REVISION_WORDS),
@@ -481,10 +487,19 @@ class GeoCellField:
                 scores[cid] += idf * (tf * (k1 := 1.5) + tf) / (tf + k1 * (1.0 - 0.75 + 0.75 * dl / avgdl))
         return scores
 
-    # Recall scope caps: how many lexical candidates to rerank, and how
-    # many support-neighbours each may pull into scope for diffusion.
-    _RECALL_CANDIDATES = 200
-    _NEIGHBOR_FANOUT = 24
+    # Recall scope caps: how many lexical candidates to rerank, how many
+    # support-neighbours each may pull into scope, and how many edges each
+    # node contributes to diffusion. These bound recall cost to a constant
+    # independent of field size or graph density.
+    _RECALL_CANDIDATES = 150
+    _NEIGHBOR_FANOUT = 12
+    _DIFFUSE_DEGREE = 32
+
+    def _top_support(self, i: int):
+        nb = self._sup_nb.get(i)
+        if nb and len(nb) > self._DIFFUSE_DEGREE:
+            nb = sorted(nb, key=lambda x: x[1], reverse=True)[:self._DIFFUSE_DEGREE]
+        return nb or []
 
     def recall(self, query: str, k: int = 8) -> List[Dict[str, Any]]:
         if not self.cells:
@@ -540,10 +555,12 @@ class GeoCellField:
         # Spreading activation over the local subgraph: energy diffuses two
         # hops along cached support edges so a query can light up memories
         # it never mentions, without touching the full graph.
+        nbcache = {i: self._top_support(i) for i in scope}
+
         def diffuse(vec: Dict[int, float]) -> Dict[int, float]:
             out: Dict[int, float] = {}
             for i in scope:
-                nb = self._sup_nb.get(i)
+                nb = nbcache[i]
                 if not nb:
                     out[i] = 0.0
                     continue

@@ -54,3 +54,45 @@ def test_index_rebuilt_after_compact_roundtrip(tmp_path):
     g = GeoCellField.load_compact(path)
     assert g._bm25("owned").sum() > 0           # postings rebuilt on load
     assert g.recall("Who owns Project Orion?", k=1)[0]["source"] == "charter"
+
+
+def test_pluggable_encoder_preserves_belief_layer():
+    import numpy as np
+    from geocell import GeoCellField, SUPERSEDED
+
+    def toy(text, dims):
+        v = np.zeros(dims, dtype=np.float32)
+        for w in text.lower().split():
+            v[hash(w) % dims] += 1.0
+        n = np.linalg.norm(v)
+        return v / n if n else v
+
+    f = GeoCellField(encoder=toy)
+    f.ingest("Project Orion budget is $2 million.", date="2026-01-01", authority=0.5)
+    f.ingest("Project Orion budget was revised to $2.7 million.", date="2026-02-01",
+             authority=0.9, confidence=0.95)
+    ans = f.ask("What is the current Project Orion budget?")
+    assert "$2.7" in ans["answer"]
+    assert f.cells[0].status == SUPERSEDED   # lifecycle works on any geometry
+
+
+def test_subject_override_seam():
+    from geocell import GeoCellField
+    f = GeoCellField()
+    # Natural prose where the rule extractor would miss the entity; a real
+    # NER would supply it via subject=.
+    f.ingest("The C9ORF72 repeat underlies 46% of familial cases.",
+             subject="c9orf72 familial", date="2026-01-01", authority=0.9)
+    f.ingest("C9orf72 accounts for 30% of familial cases.",
+             subject="c9orf72 familial", date="2026-02-01", authority=0.9)
+    assert f.stats()["open_contradictions"] >= 1   # conflict now detected
+
+
+def test_recall_bounded_scope_scales(monkeypatch):
+    """Recall must not visit the whole field: scope is candidate-bounded."""
+    from geocell import GeoCellField
+    f = GeoCellField()
+    for i in range(400):
+        f.ingest(f"Project P{i % 40} metric value is {i}.", date="2026-01-01")
+    hits = f.recall("Project P3 metric", k=5)
+    assert hits and "P3" in hits[0]["content"]

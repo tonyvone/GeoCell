@@ -1,0 +1,37 @@
+{
+  "_note": "Real PubMed abstracts captured via the PubMed MCP server. Source: PubMed (NCBI). Each record's DOI is included for attribution. authority is a documented journal-impact proxy (heuristic), NOT from PubMed.",
+  "articles": [
+    {
+      "pmid": "21944778",
+      "doi": "10.1016/j.neuron.2011.09.011",
+      "journal": "Neuron",
+      "year": "2011-09-21",
+      "authority": 0.90,
+      "abstract": "Analysis of extended clinical series found the C9ORF72 repeat expansion to be the most common genetic abnormality in familial ALS (23.5%). The repeat expansion leads to formation of nuclear RNA foci. Our findings indicate that repeat expansion in C9ORF72 is a major cause of both FTD and ALS."
+    },
+    {
+      "pmid": "21944779",
+      "doi": "10.1016/j.neuron.2011.09.010",
+      "journal": "Neuron",
+      "year": "2011-09-21",
+      "authority": 0.90,
+      "abstract": "The C9ORF72 repeat expansion underlies 46.0% of familial ALS in the Finnish population. The repeat expansion is present in one-third of familial ALS cases of outbred European descent. The C9ORF72 repeat expansion is the most common genetic cause of ALS identified to date."
+    },
+    {
+      "pmid": "32526057",
+      "doi": "10.1111/ene.14393",
+      "journal": "European Journal of Neurology",
+      "year": "2020-07-07",
+      "authority": 0.70,
+      "abstract": "The most common genetic cause of ALS is a hexanucleotide repeat expansion in the C9orf72 gene. C9orf72 is responsible for 30 to 50 percent of familial ALS and 7 percent of sporadic ALS. ALS often spreads to different body regions. Failure of respiratory muscles typically limits survival to 2 to 5 years after disease onset."
+    },
+    {
+      "pmid": "39986312",
+      "doi": "10.1016/S1474-4422(25)00026-2",
+      "journal": "Lancet Neurology",
+      "year": "2025-03-01",
+      "authority": 0.95,
+      "abstract": "GGGGCC repeat expansions in C9orf72 are a common genetic cause of amyotrophic lateral sclerosis in people of European ancestry. The repeat expansion is translated into dipeptide repeat proteins. Neuropathological aggregates of phosphorylated TDP-43 are observed in the motor cortex and spinal cord of patients. C9orf72 repeat expansions can also cause frontotemporal dementia. Clinical trials using antisense oligonucleotides to target the GGGGCC repeat RNA have not been successful."
+    }
+  ]
+}

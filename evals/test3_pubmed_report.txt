@@ -1,0 +1,35 @@
+[corpus] 4 REAL PubMed abstracts, C9orf72/ALS, 2011-2025, four journals.
+  Source: PubMed (NCBI). DOIs: 10.1016/j.neuron.2011.09.011, 10.1016/j.neuron.2011.09.010, 10.1111/ene.14393, 10.1016/S1474-4422(25)00026-2
+  The reported C9orf72 share of familial ALS genuinely drifts: 23.5% (Neuron'11), ~46%/one-third (Neuron'11), 30-50% (EurJNeurol'20).
+
+=== works on real data regardless of extraction ===
+  every answer cited: True -> Neuron 2011 (PMID 21944779)
+  trust ordering by journal authority + recency:
+     0.895  Lancet Neurology 2025 (PMID 39986312)
+     0.873  Neuron 2011 (PMID 21944778)
+     0.869  Neuron 2011 (PMID 21944779)
+     0.822  European Journal of Neurology 2020 (PMID 32526057)
+  (deterministic, 0 LLM calls)
+
+=== the bottleneck is entity extraction, not the epistemic layer ===
+  contradiction edges among frequency claims:
+     rule-based subject extractor : 0
+     with a domain entity extractor: 1
+       [contested] Analysis of extended clinical series found the C
+          vs [contested] The C9ORF72 repeat expansion underlies 46.0% of 
+  current belief: The repeat expansion is present in one-third of familial ALS
+     status active, trust 0.8679, cite Neuron 2011 (PMID 21944779)
+
+=== honest findings ===
+  WORKS on real prose, domain-agnostic, 0 LLM:
+    - per-answer citations to real papers (DOIs)
+    - trust ordered by journal authority + recency
+    - deterministic, auditable
+  DEGRADES on real prose with the built-in rule extractors:
+    - subject/entity extraction (e.g. 'repeat expansion' instead of
+      'C9orf72') -> contradictions missed until a real NER is plugged in
+    - hash lexical recall on semantic paraphrase (e.g. 'protein
+      pathology' -> 'TDP-43 aggregates') -> needs embeddings
+  CONCLUSION: the epistemic layer is the durable contribution and is
+  domain-agnostic; the NLP front-end (entity + claim extraction, encoder)
+  is pluggable and is what must be upgraded for production real-text use.
