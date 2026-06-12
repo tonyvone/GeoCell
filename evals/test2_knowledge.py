@@ -90,10 +90,16 @@ def geocell_answer(field: GeoCellField, question: str):
     ev = ans.get("evidence", [])
     top = ev[0] if ev else None
     resonant = bool(top) and top["resonance"] >= 0.45
+    # Confidence by margin: only serve when the top candidate clearly beats
+    # the runner-up. A near-tie means the discriminating term didn't land
+    # (the conversational paraphrases), so defer to the LLM rather than
+    # guess between siblings. This is selective prediction / abstention.
+    if resonant and len(ev) >= 2:
+        margin = top["resonance"] - ev[1]["resonance"]
+        if margin < 0.08 and top["resonance"] < 0.9:
+            resonant = False
     # Answerability gate: a question asking for a quantity is only served
-    # from memory when the answer actually carries a number. Otherwise the
-    # field defers to the LLM instead of confidently returning a fact of
-    # the wrong type (e.g. a vendor name for a "how much" question).
+    # from memory when the answer actually carries a number.
     if resonant and set(question.lower().replace("?", "").split()) & _NUMERIC_Q:
         if not re.search(r"\d", ans["answer"]):
             resonant = False
@@ -109,11 +115,24 @@ def geocell_answer(field: GeoCellField, question: str):
     }
 
 
+def _predicate_overlap(a_text: str, b_text: str, subject: str) -> float:
+    """Shared non-subject, non-numeric content words. Distinguishes a real
+    contradiction (same predicate, different value) from two unrelated
+    quantities about the same subject (a budget vs a vendor cost)."""
+    from geocell.text import tokenize
+    sub = set(subject.split())
+    keep = lambda s: {t for t in tokenize(s)
+                      if not t.replace("$", "").replace(".", "").replace(",", "").isdigit()} - sub
+    ta, tb = keep(a_text), keep(b_text)
+    return len(ta & tb) / max(1, min(len(ta), len(tb)))
+
+
 def adjudicate_llm(field: GeoCellField, llm_text: str, question: str):
     """Non-mutating hallucination check: does the LLM's answer conflict
-    with a trusted memory claim on the same subject? If so, quarantine it
-    and return the trusted belief instead. Mirrors the field's own
-    supersession rule without polluting the live field."""
+    with a trusted memory claim on the *same subject and same predicate*?
+    If so, quarantine it and return the trusted belief instead. Mirrors
+    the field's supersession rule (including its predicate-overlap guard)
+    without polluting the live field."""
     from geocell.text import extract_claim_values, extract_subject
     subj = extract_subject(llm_text)
     vals = {round(float(v["value"] or 0), 4) for v in extract_claim_values(llm_text) if v["value"]}
@@ -125,8 +144,9 @@ def adjudicate_llm(field: GeoCellField, llm_text: str, question: str):
         if field._subject_overlap(c.subject, subj) < 0.99:
             continue
         cvals = {round(float(v["value"] or 0), 4) for v in c.values if v["value"]}
-        if cvals and not (cvals & vals) and c.trust >= 0.6:
-            return True, c.content   # conflict with a trusted memory -> quarantine
+        if cvals and not (cvals & vals) and c.trust >= 0.6 \
+                and _predicate_overlap(llm_text, c.content, c.subject) >= 0.3:
+            return True, c.content   # same predicate, different value -> quarantine
     return False, None
 
 

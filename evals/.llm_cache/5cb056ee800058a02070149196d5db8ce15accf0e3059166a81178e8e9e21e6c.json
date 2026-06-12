@@ -1,0 +1,1 @@
+{"text": "def get_ttl(settings: dict) -> int:\n    return settings.get(\"ttl\", 60)", "wall_s": 4.887590276999617}

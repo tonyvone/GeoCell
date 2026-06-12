@@ -1,0 +1,1 @@
+{"text": "def chunk_count(total: int, per_chunk: int) -> int:\n    return (total + per_chunk - 1) // per_chunk", "wall_s": 14.42561792000015}

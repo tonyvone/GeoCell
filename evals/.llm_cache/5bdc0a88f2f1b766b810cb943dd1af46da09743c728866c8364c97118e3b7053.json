@@ -1,0 +1,1 @@
+{"text": "def by_timestamp(items: list) -> list:\n    return sorted(items, key=lambda r: r[\"ts\"])", "wall_s": 6.562872008999875}

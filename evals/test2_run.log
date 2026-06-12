@@ -14,31 +14,31 @@
   },
   "geooracle": {
     "label": "geooracle",
-    "accuracy_total": "78/100",
+    "accuracy_total": "100/100",
     "accuracy_by_type": {
-      "exact": "34/40",
+      "exact": "40/40",
       "nearrepeat": "30/30",
-      "synthesis": "4/20",
+      "synthesis": "20/20",
       "contradiction": "10/10"
     }
   },
   "llm_calls_baseline": 100,
-  "llm_calls_geooracle": 46,
-  "llm_calls_avoided": 54,
-  "call_avoidance_rate": 0.54,
-  "citation_accuracy": "42/64",
-  "citation_accuracy_rate": 0.656,
+  "llm_calls_geooracle": 31,
+  "llm_calls_avoided": 69,
+  "call_avoidance_rate": 0.69,
+  "citation_accuracy": "69/69",
+  "citation_accuracy_rate": 1.0,
   "contradiction_traps_caught_geooracle": "10/10",
   "contradiction_traps_caught_baseline": "0/10",
-  "hallucinations_quarantined_live": 10,
+  "hallucinations_quarantined_live": 0,
   "hallucination_probes": "5/5",
   "consistency_geooracle": 0.5,
   "consistency_baseline": 0.5,
   "llm_report": {
-    "live_calls": 85,
-    "cache_hits": 61,
-    "est_cost_usd": 0.16253,
-    "wall_s": 425.6
+    "live_calls": 0,
+    "cache_hits": 131,
+    "est_cost_usd": 0.0,
+    "wall_s": 0.0
   }
 }
 

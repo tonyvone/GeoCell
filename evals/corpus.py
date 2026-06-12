@@ -145,11 +145,12 @@ def build_corpus() -> Corpus:
               "2026-02-%02d" % ((i % 27) + 1), 0.85, 0.88)
 
     # ---- sales / customer records (20) -----------------------------------
-    cust_tier: Dict[str, str] = {}
+    # One consistent tier per customer (each customer gets two records).
+    cust_tier: Dict[str, str] = {cust: ["Enterprise", "Growth", "Starter"][j % 3]
+                                 for j, cust in enumerate(CUSTOMERS)}
     for i in range(20):
         cust = CUSTOMERS[i % len(CUSTOMERS)]
-        tier = ["Enterprise", "Growth", "Starter"][i % 3]
-        cust_tier[cust] = tier
+        tier = cust_tier[cust]
         c.add("record", f"Account {cust} #{i+1}",
               f"Customer {cust} is on the {tier} plan. "
               f"The {cust} account renews annually.",

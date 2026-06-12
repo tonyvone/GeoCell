@@ -1,0 +1,1 @@
+{"text": "def session_expired(now: float, expires: float) -> bool:\n    if now >= expires:\n        return True\n    return False", "wall_s": 7.94196018599996}

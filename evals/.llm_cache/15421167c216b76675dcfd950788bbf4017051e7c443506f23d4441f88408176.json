@@ -1,0 +1,1 @@
+{"text": "```python\ndef normalize_event_path(path: str) -> str:\n    return path.rstrip(\"/\")\n```", "wall_s": 6.740172912999697}

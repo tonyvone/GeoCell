@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from collections import Counter, defaultdict
 from dataclasses import asdict
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -62,6 +63,7 @@ from geocell.text import (
     extract_relations,
     extract_subject,
     raw_words,
+    stem,
     tokenize,
 )
 
@@ -81,6 +83,13 @@ class GeoCellField:
         self.quantized = False
         self._bits_pos = np.zeros((0, dims // 8), dtype=np.uint8)
         self._bits_anchor = np.zeros((0, dims // 8), dtype=np.uint8)
+        # Inverted index for the BM25 lexical channel. The geometry says
+        # how similar two sentences are overall; BM25 says which rare,
+        # informative words they share — so a discriminating term ("vendor",
+        # "owned") outweighs the common subject every candidate repeats.
+        self._postings: Dict[str, Dict[int, int]] = defaultdict(dict)
+        self._doc_len: Dict[int, int] = {}
+        self._total_len = 0
         # True when loaded from a compact snapshot: float positions are
         # rotated-space placeholders, so all similarity must use bits and
         # settle must first re-derive geometry from the lexical anchors.
@@ -122,6 +131,7 @@ class GeoCellField:
         )
         cell.log(f"created kind={kind} source={source} date={date or '?'}")
         self.cells.append(cell)
+        self._index_cell(cell)
         self.graph.add_node(cell.id)
         for pid in cell.parents:
             self.graph.add_edge(cell.id, pid, state=SUPPORT, weight=0.9,
@@ -132,6 +142,33 @@ class GeoCellField:
         self._wire(cell)
         self._trust_dirty = True
         return cell.id
+
+    def _index_cell(self, cell: GeoCell) -> None:
+        toks = [stem(t) for t in tokenize(cell.content)]
+        self._doc_len[cell.id] = len(toks)
+        self._total_len += len(toks)
+        for tok, tf in Counter(toks).items():
+            self._postings[tok][cell.id] = tf
+
+    def _bm25(self, query: str, k1: float = 1.5, b: float = 0.75) -> np.ndarray:
+        """Okapi BM25 over the inverted index. Standard IR ranking with
+        tf saturation and length normalization, computed against the same
+        stemmed vocabulary the encoder uses."""
+        n = len(self.cells)
+        scores = np.zeros(n, dtype=np.float64)
+        if not self._doc_len:
+            return scores
+        avgdl = self._total_len / max(1, len(self._doc_len))
+        for tok in {stem(t) for t in tokenize(query)}:
+            postings = self._postings.get(tok)
+            if not postings:
+                continue
+            df = len(postings)
+            idf = np.log(1.0 + (n - df + 0.5) / (df + 0.5))
+            for cid, tf in postings.items():
+                dl = self._doc_len.get(cid, 0)
+                scores[cid] += idf * (tf * (k1 + 1.0)) / (tf + k1 * (1.0 - b + b * dl / avgdl))
+        return scores
 
     @staticmethod
     def _subject_overlap(a: str, b: str) -> float:
@@ -407,6 +444,14 @@ class GeoCellField:
         if self.quantized:
             sims = 0.65 * asymmetric_similarity(q, self._bits_anchor, self.dims) + \
                    0.35 * asymmetric_similarity(q, self._bits_pos, self.dims)
+        # Lexical channel: BM25, normalized so it blends with the geometric
+        # cosine. It carries the term-informativeness the hash geometry
+        # lacks, which is what breaks ties between sibling sentences.
+        bm = self._bm25(query)
+        bmax = bm.max()
+        if bmax > 0:
+            bm = bm / bmax
+
         base = np.zeros(len(self.cells), dtype=np.float64)
         for c in self.cells:
             if self.quantized:
@@ -421,7 +466,7 @@ class GeoCellField:
                 bonus = 0.04
             else:
                 bonus = 0.0
-            base[c.id] = max(0.0, sim + bonus)
+            base[c.id] = max(0.0, 0.55 * sim + 0.45 * bm[c.id] + bonus)
 
         # Spreading activation: energy diffuses two hops along support edges,
         # so a query can light up memories it never mentions.
@@ -795,6 +840,7 @@ class GeoCellField:
             raw["position"] = unpack_signs(bits_pos, mem.dims).tolist()
             cell = GeoCell(**raw)
             mem.cells.append(cell)
+            mem._index_cell(cell)
             mem.graph.add_node(cell.id)
             mem._bits_pos[cell.id] = bits_pos
             mem._bits_anchor[cell.id] = bits_anchor
@@ -828,6 +874,7 @@ class GeoCellField:
         for raw in data.get("cells", []):
             mem.cells.append(GeoCell(**{**defaults, **raw}))
         for c in mem.cells:
+            mem._index_cell(c)
             mem.graph.add_node(c.id)
         for u, v, d in data.get("edges", []):
             mem.graph.add_edge(u, v, **d)

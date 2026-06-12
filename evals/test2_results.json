@@ -12,31 +12,31 @@
     },
     "geooracle": {
       "label": "geooracle",
-      "accuracy_total": "78/100",
+      "accuracy_total": "100/100",
       "accuracy_by_type": {
-        "exact": "34/40",
+        "exact": "40/40",
         "nearrepeat": "30/30",
-        "synthesis": "4/20",
+        "synthesis": "20/20",
         "contradiction": "10/10"
       }
     },
     "llm_calls_baseline": 100,
-    "llm_calls_geooracle": 46,
-    "llm_calls_avoided": 54,
-    "call_avoidance_rate": 0.54,
-    "citation_accuracy": "42/64",
-    "citation_accuracy_rate": 0.656,
+    "llm_calls_geooracle": 31,
+    "llm_calls_avoided": 69,
+    "call_avoidance_rate": 0.69,
+    "citation_accuracy": "69/69",
+    "citation_accuracy_rate": 1.0,
     "contradiction_traps_caught_geooracle": "10/10",
     "contradiction_traps_caught_baseline": "0/10",
-    "hallucinations_quarantined_live": 10,
+    "hallucinations_quarantined_live": 0,
     "hallucination_probes": "5/5",
     "consistency_geooracle": 0.5,
     "consistency_baseline": 0.5,
     "llm_report": {
-      "live_calls": 85,
-      "cache_hits": 61,
-      "est_cost_usd": 0.16253,
-      "wall_s": 425.6
+      "live_calls": 0,
+      "cache_hits": 131,
+      "est_cost_usd": 0.0,
+      "wall_s": 0.0
     }
   },
   "probes": {
@@ -79,7 +79,7 @@
       "answer": "Project Orion is owned by Dana Reyes.",
       "citation": "doc-001",
       "belief_status": "active",
-      "geo_ms": 117.79,
+      "geo_ms": 121.73,
       "correct": true,
       "trap_handled": false
     },
@@ -91,7 +91,7 @@
       "answer": "Project Helios is owned by Sam Okafor.",
       "citation": "doc-003",
       "belief_status": "active",
-      "geo_ms": 47.04,
+      "geo_ms": 54.56,
       "correct": true,
       "trap_handled": false
     },
@@ -103,7 +103,7 @@
       "answer": "Project Vega is owned by Priya Nair.",
       "citation": "doc-005",
       "belief_status": "active",
-      "geo_ms": 46.11,
+      "geo_ms": 58.11,
       "correct": true,
       "trap_handled": false
     },
@@ -115,7 +115,7 @@
       "answer": "Project Atlas is owned by Lars Eriksson.",
       "citation": "doc-007",
       "belief_status": "active",
-      "geo_ms": 46.63,
+      "geo_ms": 67.0,
       "correct": true,
       "trap_handled": false
     },
@@ -127,7 +127,7 @@
       "answer": "Project Nova is owned by Mei Tan.",
       "citation": "doc-009",
       "belief_status": "active",
-      "geo_ms": 60.55,
+      "geo_ms": 60.71,
       "correct": true,
       "trap_handled": false
     },
@@ -139,7 +139,7 @@
       "answer": "Project Lyra is owned by Jamal Brooks.",
       "citation": "doc-011",
       "belief_status": "active",
-      "geo_ms": 69.89,
+      "geo_ms": 59.63,
       "correct": true,
       "trap_handled": false
     },
@@ -151,7 +151,7 @@
       "answer": "Project Draco is owned by Elena Costa.",
       "citation": "doc-013",
       "belief_status": "active",
-      "geo_ms": 47.59,
+      "geo_ms": 60.32,
       "correct": true,
       "trap_handled": false
     },
@@ -163,7 +163,7 @@
       "answer": "Project Cygnus is owned by Tom Whaley.",
       "citation": "doc-015",
       "belief_status": "active",
-      "geo_ms": 45.26,
+      "geo_ms": 59.5,
       "correct": true,
       "trap_handled": false
     },
@@ -175,7 +175,7 @@
       "answer": "Project Phoenix is owned by Aisha Khan.",
       "citation": "doc-017",
       "belief_status": "active",
-      "geo_ms": 46.09,
+      "geo_ms": 59.02,
       "correct": true,
       "trap_handled": false
     },
@@ -187,7 +187,7 @@
       "answer": "Project Titan is owned by Victor Ruiz.",
       "citation": "doc-019",
       "belief_status": "active",
-      "geo_ms": 45.85,
+      "geo_ms": 59.39,
       "correct": true,
       "trap_handled": false
     },
@@ -199,7 +199,7 @@
       "answer": "Project Orion belongs to the Platform department.",
       "citation": "doc-001",
       "belief_status": "active",
-      "geo_ms": 45.61,
+      "geo_ms": 59.75,
       "correct": true,
       "trap_handled": false
     },
@@ -211,7 +211,7 @@
       "answer": "Project Helios belongs to the Growth department.",
       "citation": "doc-003",
       "belief_status": "active",
-      "geo_ms": 48.03,
+      "geo_ms": 61.64,
       "correct": true,
       "trap_handled": false
     },
@@ -223,7 +223,7 @@
       "answer": "Project Vega belongs to the Security department.",
       "citation": "doc-005",
       "belief_status": "active",
-      "geo_ms": 49.67,
+      "geo_ms": 54.26,
       "correct": true,
       "trap_handled": false
     },
@@ -235,7 +235,7 @@
       "answer": "Project Atlas belongs to the Data department.",
       "citation": "doc-007",
       "belief_status": "active",
-      "geo_ms": 46.9,
+      "geo_ms": 54.09,
       "correct": true,
       "trap_handled": false
     },
@@ -247,7 +247,7 @@
       "answer": "Project Nova belongs to the Infrastructure department.",
       "citation": "doc-009",
       "belief_status": "active",
-      "geo_ms": 49.98,
+      "geo_ms": 57.26,
       "correct": true,
       "trap_handled": false
     },
@@ -259,7 +259,7 @@
       "answer": "Project Lyra belongs to the Mobile department.",
       "citation": "doc-011",
       "belief_status": "active",
-      "geo_ms": 48.6,
+      "geo_ms": 57.27,
       "correct": true,
       "trap_handled": false
     },
@@ -271,7 +271,7 @@
       "answer": "Project Draco belongs to the Platform department.",
       "citation": "doc-013",
       "belief_status": "active",
-      "geo_ms": 49.08,
+      "geo_ms": 55.19,
       "correct": true,
       "trap_handled": false
     },
@@ -283,7 +283,7 @@
       "answer": "Project Cygnus belongs to the Growth department.",
       "citation": "doc-015",
       "belief_status": "active",
-      "geo_ms": 48.33,
+      "geo_ms": 52.34,
       "correct": true,
       "trap_handled": false
     },
@@ -295,7 +295,7 @@
       "answer": "Project Phoenix belongs to the Security department.",
       "citation": "doc-017",
       "belief_status": "active",
-      "geo_ms": 45.37,
+      "geo_ms": 56.82,
       "correct": true,
       "trap_handled": false
     },
@@ -307,7 +307,7 @@
       "answer": "Project Titan belongs to the Data department.",
       "citation": "doc-019",
       "belief_status": "active",
-      "geo_ms": 44.68,
+      "geo_ms": 53.97,
       "correct": true,
       "trap_handled": false
     },
@@ -319,7 +319,7 @@
       "answer": "Vendor Acme charges $66,000 per year for the standard managed services tier.",
       "citation": "doc-037",
       "belief_status": "active",
-      "geo_ms": 45.73,
+      "geo_ms": 55.9,
       "correct": true,
       "trap_handled": false
     },
@@ -327,11 +327,13 @@
       "qid": "q-022",
       "qtype": "exact",
       "gold": "$27,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Globex charges $27,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 45.93,
-      "correct": true
+      "citation": "doc-038",
+      "belief_status": "active",
+      "geo_ms": 56.82,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-023",
@@ -341,7 +343,7 @@
       "answer": "Vendor Initech charges $84,000 per year for the standard managed services tier.",
       "citation": "doc-039",
       "belief_status": "active",
-      "geo_ms": 46.61,
+      "geo_ms": 58.66,
       "correct": true,
       "trap_handled": false
     },
@@ -349,170 +351,180 @@
       "qid": "q-024",
       "qtype": "exact",
       "gold": "$47,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Umbrella charges $47,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 52.07,
-      "correct": true
+      "citation": "doc-040",
+      "belief_status": "active",
+      "geo_ms": 59.03,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-025",
       "qtype": "exact",
       "gold": "$24,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Hooli charges $24,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 50.29,
-      "correct": true
+      "citation": "doc-041",
+      "belief_status": "active",
+      "geo_ms": 58.96,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-026",
       "qtype": "exact",
       "gold": "$31,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Stark charges $31,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 51.16,
-      "correct": true
+      "citation": "doc-042",
+      "belief_status": "active",
+      "geo_ms": 59.96,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-027",
       "qtype": "exact",
       "gold": "$75,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Wayne charges $75,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 49.02,
-      "correct": true
+      "citation": "doc-043",
+      "belief_status": "active",
+      "geo_ms": 59.2,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-028",
       "qtype": "exact",
       "gold": "$73,000",
-      "origin": "llm",
+      "origin": "geocell",
       "answer": "Vendor Soylent charges $73,000 per year for the standard managed services tier.",
-      "citation": null,
-      "geo_ms": 46.65,
-      "correct": true
+      "citation": "doc-044",
+      "belief_status": "active",
+      "geo_ms": 61.42,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-029",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "origin": "geocell",
       "answer": "Customer Northwind is on the Enterprise plan.",
       "citation": "record-186",
       "belief_status": "active",
-      "geo_ms": 53.59,
-      "correct": false,
+      "geo_ms": 61.56,
+      "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-030",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "origin": "geocell",
       "answer": "Customer Contoso is on the Growth plan.",
-      "citation": "record-177",
+      "citation": "record-187",
       "belief_status": "active",
-      "geo_ms": 50.97,
-      "correct": false,
+      "geo_ms": 61.2,
+      "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-031",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "origin": "geocell",
-      "answer": "Customer Fabrikam is on the Enterprise plan.",
+      "answer": "Customer Fabrikam is on the Starter plan.",
       "citation": "record-188",
       "belief_status": "active",
-      "geo_ms": 53.95,
+      "geo_ms": 58.49,
       "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-032",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "origin": "geocell",
-      "answer": "Customer Tailspin is on the Growth plan.",
+      "answer": "Customer Tailspin is on the Enterprise plan.",
       "citation": "record-189",
       "belief_status": "active",
-      "geo_ms": 50.49,
+      "geo_ms": 59.24,
       "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-033",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "origin": "geocell",
       "answer": "Customer Adventure is on the Growth plan.",
-      "citation": "record-180",
+      "citation": "record-190",
       "belief_status": "active",
-      "geo_ms": 48.48,
-      "correct": false,
+      "geo_ms": 59.39,
+      "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-034",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "origin": "geocell",
-      "answer": "Customer Wingtip is on the Enterprise plan.",
+      "answer": "Customer Wingtip is on the Starter plan.",
       "citation": "record-191",
       "belief_status": "active",
-      "geo_ms": 46.87,
+      "geo_ms": 57.77,
       "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-035",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "origin": "geocell",
       "answer": "Customer Litware is on the Enterprise plan.",
       "citation": "record-192",
       "belief_status": "active",
-      "geo_ms": 46.29,
-      "correct": false,
+      "geo_ms": 56.48,
+      "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-036",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "origin": "geocell",
       "answer": "Customer Proseware is on the Growth plan.",
-      "citation": "record-183",
+      "citation": "record-193",
       "belief_status": "active",
-      "geo_ms": 46.38,
-      "correct": false,
+      "geo_ms": 56.53,
+      "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-037",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "origin": "geocell",
-      "answer": "Customer Fourth Coffee is on the Enterprise plan.",
+      "answer": "Customer Fourth Coffee is on the Starter plan.",
       "citation": "record-194",
       "belief_status": "active",
-      "geo_ms": 45.54,
+      "geo_ms": 55.39,
       "correct": true,
       "trap_handled": false
     },
     {
       "qid": "q-038",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "origin": "geocell",
       "answer": "Customer Graphic Design Inc is on the Enterprise plan.",
-      "citation": "record-185",
+      "citation": "record-195",
       "belief_status": "active",
-      "geo_ms": 45.97,
-      "correct": false,
+      "geo_ms": 56.46,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -523,7 +535,7 @@
       "answer": "The Platform department relies on vendor Stark.",
       "citation": "doc-031",
       "belief_status": "active",
-      "geo_ms": 46.99,
+      "geo_ms": 54.06,
       "correct": true,
       "trap_handled": false
     },
@@ -535,7 +547,7 @@
       "answer": "The Growth department relies on vendor Initech.",
       "citation": "doc-032",
       "belief_status": "active",
-      "geo_ms": 47.74,
+      "geo_ms": 52.95,
       "correct": true,
       "trap_handled": false
     },
@@ -543,11 +555,13 @@
       "qid": "q-041",
       "qtype": "nearrepeat",
       "gold": "Dana Reyes",
-      "origin": "llm",
-      "answer": "Dana Reyes is leading Project Orion.",
-      "citation": null,
-      "geo_ms": 48.51,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Orion lead is Dana Reyes.",
+      "citation": "doc-002",
+      "belief_status": "active",
+      "geo_ms": 57.51,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-042",
@@ -556,7 +570,7 @@
       "origin": "llm",
       "answer": "Sam Okafor is leading Project Helios.",
       "citation": null,
-      "geo_ms": 46.54,
+      "geo_ms": 55.49,
       "correct": true
     },
     {
@@ -566,18 +580,20 @@
       "origin": "llm",
       "answer": "Priya Nair is the lead on Project Vega.",
       "citation": null,
-      "geo_ms": 48.43,
+      "geo_ms": 58.51,
       "correct": true
     },
     {
       "qid": "q-044",
       "qtype": "nearrepeat",
       "gold": "Lars Eriksson",
-      "origin": "llm",
-      "answer": "Lars Eriksson is leading Project Atlas.",
-      "citation": null,
-      "geo_ms": 46.53,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Atlas lead is Lars Eriksson.",
+      "citation": "doc-008",
+      "belief_status": "active",
+      "geo_ms": 57.83,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-045",
@@ -586,7 +602,7 @@
       "origin": "llm",
       "answer": "Mei Tan is leading Project Nova.",
       "citation": null,
-      "geo_ms": 49.01,
+      "geo_ms": 57.25,
       "correct": true
     },
     {
@@ -596,18 +612,20 @@
       "origin": "llm",
       "answer": "Jamal Brooks is the point person on Project Lyra.",
       "citation": null,
-      "geo_ms": 47.65,
+      "geo_ms": 58.42,
       "correct": true
     },
     {
       "qid": "q-047",
       "qtype": "nearrepeat",
       "gold": "Elena Costa",
-      "origin": "llm",
-      "answer": "Elena Costa is leading the Draco initiative (per doc-014).",
-      "citation": null,
-      "geo_ms": 47.85,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Draco lead is Elena Costa.",
+      "citation": "doc-014",
+      "belief_status": "active",
+      "geo_ms": 59.46,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-048",
@@ -616,7 +634,7 @@
       "origin": "llm",
       "answer": "Tom Whaley is the lead driving Project Cygnus.",
       "citation": null,
-      "geo_ms": 47.01,
+      "geo_ms": 57.26,
       "correct": true
     },
     {
@@ -626,18 +644,20 @@
       "origin": "llm",
       "answer": "Aisha Khan is the point person on Project Phoenix.",
       "citation": null,
-      "geo_ms": 46.69,
+      "geo_ms": 58.07,
       "correct": true
     },
     {
       "qid": "q-050",
       "qtype": "nearrepeat",
       "gold": "Victor Ruiz",
-      "origin": "llm",
-      "answer": "Victor Ruiz is leading Project Titan.",
-      "citation": null,
-      "geo_ms": 46.46,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Titan lead is Victor Ruiz.",
+      "citation": "doc-020",
+      "belief_status": "active",
+      "geo_ms": 58.33,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-051",
@@ -646,7 +666,7 @@
       "origin": "llm",
       "answer": "Dana Reyes is the lead driving Project Rhea.",
       "citation": null,
-      "geo_ms": 49.11,
+      "geo_ms": 58.1,
       "correct": true
     },
     {
@@ -656,18 +676,20 @@
       "origin": "llm",
       "answer": "Sam Okafor is the lead on Project Pavo.",
       "citation": null,
-      "geo_ms": 48.94,
+      "geo_ms": 57.72,
       "correct": true
     },
     {
       "qid": "q-053",
       "qtype": "nearrepeat",
       "gold": "Priya Nair",
-      "origin": "llm",
-      "answer": "Priya Nair is leading Project Corvus.",
-      "citation": null,
-      "geo_ms": 52.18,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Corvus lead is Priya Nair.",
+      "citation": "doc-026",
+      "belief_status": "active",
+      "geo_ms": 56.56,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-054",
@@ -676,7 +698,7 @@
       "origin": "llm",
       "answer": "Lars Eriksson is the lead for Project Mensa.",
       "citation": null,
-      "geo_ms": 48.53,
+      "geo_ms": 52.5,
       "correct": true
     },
     {
@@ -686,18 +708,20 @@
       "origin": "llm",
       "answer": "Mei Tan is the lead on Project Tucana.",
       "citation": null,
-      "geo_ms": 49.18,
+      "geo_ms": 52.34,
       "correct": true
     },
     {
       "qid": "q-056",
       "qtype": "nearrepeat",
       "gold": "Dana Reyes",
-      "origin": "llm",
-      "answer": "Dana Reyes is leading Project Orion.",
-      "citation": null,
-      "geo_ms": 49.42,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Orion lead is Dana Reyes.",
+      "citation": "doc-002",
+      "belief_status": "active",
+      "geo_ms": 52.25,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-057",
@@ -706,7 +730,7 @@
       "origin": "llm",
       "answer": "Sam Okafor is leading Project Helios.",
       "citation": null,
-      "geo_ms": 48.35,
+      "geo_ms": 52.01,
       "correct": true
     },
     {
@@ -716,18 +740,20 @@
       "origin": "llm",
       "answer": "Priya Nair is the lead on Project Vega.",
       "citation": null,
-      "geo_ms": 47.32,
+      "geo_ms": 53.34,
       "correct": true
     },
     {
       "qid": "q-059",
       "qtype": "nearrepeat",
       "gold": "Lars Eriksson",
-      "origin": "llm",
-      "answer": "Lars Eriksson is leading Project Atlas.",
-      "citation": null,
-      "geo_ms": 47.7,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Atlas lead is Lars Eriksson.",
+      "citation": "doc-008",
+      "belief_status": "active",
+      "geo_ms": 50.51,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-060",
@@ -736,7 +762,7 @@
       "origin": "llm",
       "answer": "Mei Tan is leading Project Nova.",
       "citation": null,
-      "geo_ms": 46.59,
+      "geo_ms": 49.24,
       "correct": true
     },
     {
@@ -746,18 +772,20 @@
       "origin": "llm",
       "answer": "Jamal Brooks is the point person on Project Lyra.",
       "citation": null,
-      "geo_ms": 45.8,
+      "geo_ms": 48.73,
       "correct": true
     },
     {
       "qid": "q-062",
       "qtype": "nearrepeat",
       "gold": "Elena Costa",
-      "origin": "llm",
-      "answer": "Elena Costa is leading the Draco initiative (per doc-014).",
-      "citation": null,
-      "geo_ms": 46.1,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Draco lead is Elena Costa.",
+      "citation": "doc-014",
+      "belief_status": "active",
+      "geo_ms": 48.98,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-063",
@@ -766,7 +794,7 @@
       "origin": "llm",
       "answer": "Tom Whaley is the lead driving Project Cygnus.",
       "citation": null,
-      "geo_ms": 46.04,
+      "geo_ms": 54.21,
       "correct": true
     },
     {
@@ -776,18 +804,20 @@
       "origin": "llm",
       "answer": "Aisha Khan is the point person on Project Phoenix.",
       "citation": null,
-      "geo_ms": 46.68,
+      "geo_ms": 55.73,
       "correct": true
     },
     {
       "qid": "q-065",
       "qtype": "nearrepeat",
       "gold": "Victor Ruiz",
-      "origin": "llm",
-      "answer": "Victor Ruiz is leading Project Titan.",
-      "citation": null,
-      "geo_ms": 47.84,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Titan lead is Victor Ruiz.",
+      "citation": "doc-020",
+      "belief_status": "active",
+      "geo_ms": 55.25,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-066",
@@ -796,7 +826,7 @@
       "origin": "llm",
       "answer": "Dana Reyes is the lead driving Project Rhea.",
       "citation": null,
-      "geo_ms": 48.81,
+      "geo_ms": 52.81,
       "correct": true
     },
     {
@@ -806,18 +836,20 @@
       "origin": "llm",
       "answer": "Sam Okafor is the lead on Project Pavo.",
       "citation": null,
-      "geo_ms": 49.53,
+      "geo_ms": 51.73,
       "correct": true
     },
     {
       "qid": "q-068",
       "qtype": "nearrepeat",
       "gold": "Priya Nair",
-      "origin": "llm",
-      "answer": "Priya Nair is leading Project Corvus.",
-      "citation": null,
-      "geo_ms": 48.46,
-      "correct": true
+      "origin": "geocell",
+      "answer": "Project Corvus lead is Priya Nair.",
+      "citation": "doc-026",
+      "belief_status": "active",
+      "geo_ms": 50.68,
+      "correct": true,
+      "trap_handled": false
     },
     {
       "qid": "q-069",
@@ -826,7 +858,7 @@
       "origin": "llm",
       "answer": "Lars Eriksson is the lead for Project Mensa.",
       "citation": null,
-      "geo_ms": 47.48,
+      "geo_ms": 49.37,
       "correct": true
     },
     {
@@ -836,7 +868,7 @@
       "origin": "llm",
       "answer": "Mei Tan is the lead on Project Tucana.",
       "citation": null,
-      "geo_ms": 47.24,
+      "geo_ms": 49.58,
       "correct": true
     },
     {
@@ -847,7 +879,7 @@
       "answer": "Project Orion depends on vendor Stark.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 48.15,
+      "geo_ms": 50.9,
       "correct": true,
       "trap_handled": false
     },
@@ -855,13 +887,11 @@
       "qid": "q-072",
       "qtype": "synthesis",
       "gold": "Initech",
-      "origin": "geocell",
-      "answer": "Project Helios is owned by Sam Okafor.",
-      "citation": "doc-004",
-      "belief_status": "active",
-      "geo_ms": 49.06,
-      "correct": false,
-      "trap_handled": false
+      "origin": "llm",
+      "answer": "Project Helios ultimately relies on vendor Initech, as Project Helios belongs to the Growth department which relies on Initech.",
+      "citation": null,
+      "geo_ms": 49.38,
+      "correct": true
     },
     {
       "qid": "q-073",
@@ -871,7 +901,7 @@
       "answer": "Project Vega depends on vendor Wayne.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 46.59,
+      "geo_ms": 50.26,
       "correct": true,
       "trap_handled": false
     },
@@ -880,11 +910,11 @@
       "qtype": "synthesis",
       "gold": "Acme",
       "origin": "geocell",
-      "answer": "Project Atlas is currently on track.",
-      "citation": "doc-008",
+      "answer": "Project Atlas depends on vendor Acme.",
+      "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 46.15,
-      "correct": false,
+      "geo_ms": 52.0,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -892,11 +922,11 @@
       "qtype": "synthesis",
       "gold": "Globex",
       "origin": "geocell",
-      "answer": "Project Nova is currently on track.",
+      "answer": "Project Nova depends on vendor Globex.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 50.72,
-      "correct": false,
+      "geo_ms": 52.31,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -904,11 +934,11 @@
       "qtype": "synthesis",
       "gold": "Globex",
       "origin": "geocell",
-      "answer": "Project Lyra is currently on track.",
+      "answer": "Project Lyra depends on vendor Globex.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 48.77,
-      "correct": false,
+      "geo_ms": 49.44,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -916,11 +946,11 @@
       "qtype": "synthesis",
       "gold": "Stark",
       "origin": "geocell",
-      "answer": "Project Draco is currently on track.",
+      "answer": "Project Draco depends on vendor Stark.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 50.29,
-      "correct": false,
+      "geo_ms": 47.61,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -928,11 +958,11 @@
       "qtype": "synthesis",
       "gold": "Initech",
       "origin": "geocell",
-      "answer": "Project Cygnus is owned by Tom Whaley.",
-      "citation": "doc-016",
+      "answer": "Project Cygnus depends on vendor Initech.",
+      "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 53.62,
-      "correct": false,
+      "geo_ms": 47.81,
+      "correct": true,
       "trap_handled": false
     },
     {
@@ -943,7 +973,7 @@
       "answer": "Project Phoenix depends on vendor Wayne.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 53.74,
+      "geo_ms": 47.84,
       "correct": true,
       "trap_handled": false
     },
@@ -955,7 +985,7 @@
       "answer": "Project Titan depends on vendor Acme.",
       "citation": "geocell_inference",
       "belief_status": "active",
-      "geo_ms": 48.58,
+      "geo_ms": 47.34,
       "correct": true,
       "trap_handled": false
     },
@@ -963,111 +993,101 @@
       "qid": "q-081",
       "qtype": "synthesis",
       "gold": "$31,000",
-      "origin": "field_override",
-      "answer": "The Project Orion budget was revised to $800,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Orion belongs to the Platform department, which relies on vendor Stark, who charges $31,000 per year for standard managed services.",
-      "geo_ms": 45.93,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Orion belongs to the Platform department, which relies on vendor Stark, who charges $31,000 per year for standard managed services.",
+      "citation": null,
+      "geo_ms": 47.26,
+      "correct": true
     },
     {
       "qid": "q-082",
       "qtype": "synthesis",
       "gold": "$84,000",
-      "origin": "field_override",
-      "answer": "The Project Helios budget was revised to $1,050,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Helios belongs to the Growth department, which relies on vendor Initech, charging $84,000 per year for the standard managed services tier.",
-      "geo_ms": 45.97,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Helios belongs to the Growth department, which relies on vendor Initech, charging $84,000 per year for the standard managed services tier.",
+      "citation": null,
+      "geo_ms": 48.42,
+      "correct": true
     },
     {
       "qid": "q-083",
       "qtype": "synthesis",
       "gold": "$75,000",
-      "origin": "field_override",
-      "answer": "The Project Vega budget was revised to $1,300,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Vega belongs to the Security department, which relies on vendor Wayne, who charges $75,000 per year.",
-      "geo_ms": 46.0,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Vega belongs to the Security department, which relies on vendor Wayne, who charges $75,000 per year.",
+      "citation": null,
+      "geo_ms": 48.96,
+      "correct": true
     },
     {
       "qid": "q-084",
       "qtype": "synthesis",
       "gold": "$66,000",
-      "origin": "field_override",
-      "answer": "The Project Atlas budget was revised to $1,550,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Atlas belongs to the Data department, which relies on vendor Acme, charging $66,000 per year.",
-      "geo_ms": 47.42,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Atlas belongs to the Data department, which relies on vendor Acme, charging $66,000 per year.",
+      "citation": null,
+      "geo_ms": 51.51,
+      "correct": true
     },
     {
       "qid": "q-085",
       "qtype": "synthesis",
       "gold": "$27,000",
-      "origin": "field_override",
-      "answer": "The Project Nova budget was revised to $1,800,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Nova belongs to the Infrastructure department (doc-009), which relies on vendor Globex (doc-035), who charges $27,000 per year for standard managed services (doc-038).",
-      "geo_ms": 48.99,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Nova belongs to the Infrastructure department (doc-009), which relies on vendor Globex (doc-035), who charges $27,000 per year for standard managed services (doc-038).",
+      "citation": null,
+      "geo_ms": 50.69,
+      "correct": true
     },
     {
       "qid": "q-086",
       "qtype": "synthesis",
       "gold": "$27,000",
-      "origin": "field_override",
-      "answer": "The Project Lyra budget was revised to $2,050,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Lyra belongs to the Mobile department, which relies on vendor Globex that charges $27,000 per year for the standard managed services tier.",
-      "geo_ms": 46.37,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Lyra belongs to the Mobile department, which relies on vendor Globex that charges $27,000 per year for the standard managed services tier.",
+      "citation": null,
+      "geo_ms": 49.86,
+      "correct": true
     },
     {
       "qid": "q-087",
       "qtype": "synthesis",
       "gold": "$31,000",
-      "origin": "field_override",
-      "answer": "The Project Draco budget was revised to $2,300,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Draco belongs to the Platform department, which relies on vendor Stark, who charges $31,000 per year.",
-      "geo_ms": 46.12,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Draco belongs to the Platform department, which relies on vendor Stark, who charges $31,000 per year.",
+      "citation": null,
+      "geo_ms": 49.47,
+      "correct": true
     },
     {
       "qid": "q-088",
       "qtype": "synthesis",
       "gold": "$84,000",
-      "origin": "field_override",
-      "answer": "The Project Cygnus budget was revised to $2,550,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Cygnus belongs to the Growth department, which relies on vendor Initech at $84,000 per year.",
-      "geo_ms": 45.85,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Cygnus belongs to the Growth department, which relies on vendor Initech at $84,000 per year.",
+      "citation": null,
+      "geo_ms": 50.53,
+      "correct": true
     },
     {
       "qid": "q-089",
       "qtype": "synthesis",
       "gold": "$75,000",
-      "origin": "field_override",
-      "answer": "The Project Phoenix budget was revised to $2,800,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Phoenix belongs to the Security department (doc-017), which relies on vendor Wayne (doc-033), who charges $75,000 per year (doc-043).",
-      "geo_ms": 45.57,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Phoenix belongs to the Security department (doc-017), which relies on vendor Wayne (doc-033), who charges $75,000 per year (doc-043).",
+      "citation": null,
+      "geo_ms": 50.83,
+      "correct": true
     },
     {
       "qid": "q-090",
       "qtype": "synthesis",
       "gold": "$66,000",
-      "origin": "field_override",
-      "answer": "The Project Titan budget was revised to $3,050,000 by the finance committee.",
-      "citation": "memory",
-      "quarantined_llm": "Project Titan belongs to the Data department, which relies on vendor Acme, and Acme charges $66,000 per year.",
-      "geo_ms": 46.01,
-      "correct": false
+      "origin": "llm",
+      "answer": "Project Titan belongs to the Data department, which relies on vendor Acme, and Acme charges $66,000 per year.",
+      "citation": null,
+      "geo_ms": 48.7,
+      "correct": true
     },
     {
       "qid": "q-091",
@@ -1077,7 +1097,7 @@
       "answer": "The Project Orion budget was revised to $800,000 by the finance committee.",
       "citation": "doc-197",
       "belief_status": "active",
-      "geo_ms": 47.07,
+      "geo_ms": 48.67,
       "correct": true,
       "trap_handled": true
     },
@@ -1089,7 +1109,7 @@
       "answer": "The Project Helios budget was revised to $1,050,000 by the finance committee.",
       "citation": "doc-199",
       "belief_status": "active",
-      "geo_ms": 48.84,
+      "geo_ms": 48.49,
       "correct": true,
       "trap_handled": true
     },
@@ -1101,7 +1121,7 @@
       "answer": "The Project Vega budget was revised to $1,300,000 by the finance committee.",
       "citation": "doc-201",
       "belief_status": "active",
-      "geo_ms": 53.08,
+      "geo_ms": 48.87,
       "correct": true,
       "trap_handled": true
     },
@@ -1113,7 +1133,7 @@
       "answer": "The Project Atlas budget was revised to $1,550,000 by the finance committee.",
       "citation": "doc-203",
       "belief_status": "active",
-      "geo_ms": 45.14,
+      "geo_ms": 47.07,
       "correct": true,
       "trap_handled": true
     },
@@ -1125,7 +1145,7 @@
       "answer": "The Project Nova budget was revised to $1,800,000 by the finance committee.",
       "citation": "doc-205",
       "belief_status": "active",
-      "geo_ms": 46.23,
+      "geo_ms": 47.97,
       "correct": true,
       "trap_handled": true
     },
@@ -1137,7 +1157,7 @@
       "answer": "The Project Lyra budget was revised to $2,050,000 by the finance committee.",
       "citation": "doc-207",
       "belief_status": "active",
-      "geo_ms": 46.15,
+      "geo_ms": 48.31,
       "correct": true,
       "trap_handled": true
     },
@@ -1149,7 +1169,7 @@
       "answer": "The Project Draco budget was revised to $2,300,000 by the finance committee.",
       "citation": "doc-209",
       "belief_status": "active",
-      "geo_ms": 47.47,
+      "geo_ms": 46.74,
       "correct": true,
       "trap_handled": true
     },
@@ -1159,9 +1179,9 @@
       "gold": "$2,550,000",
       "origin": "geocell",
       "answer": "The Project Cygnus budget was revised to $2,550,000 by the finance committee.",
-      "citation": "doc-016",
+      "citation": "doc-211",
       "belief_status": "active",
-      "geo_ms": 51.1,
+      "geo_ms": 46.85,
       "correct": true,
       "trap_handled": true
     },
@@ -1173,7 +1193,7 @@
       "answer": "The Project Phoenix budget was revised to $2,800,000 by the finance committee.",
       "citation": "doc-213",
       "belief_status": "active",
-      "geo_ms": 53.08,
+      "geo_ms": 49.48,
       "correct": true,
       "trap_handled": true
     },
@@ -1185,7 +1205,7 @@
       "answer": "The Project Titan budget was revised to $3,050,000 by the finance committee.",
       "citation": "doc-215",
       "belief_status": "active",
-      "geo_ms": 50.84,
+      "geo_ms": 49.25,
       "correct": true,
       "trap_handled": true
     }
@@ -1418,7 +1438,7 @@
     {
       "qid": "q-029",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1426,7 +1446,7 @@
     {
       "qid": "q-030",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1434,7 +1454,7 @@
     {
       "qid": "q-031",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1442,7 +1462,7 @@
     {
       "qid": "q-032",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1450,7 +1470,7 @@
     {
       "qid": "q-033",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1458,7 +1478,7 @@
     {
       "qid": "q-034",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1466,7 +1486,7 @@
     {
       "qid": "q-035",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1474,7 +1494,7 @@
     {
       "qid": "q-036",
       "qtype": "exact",
-      "gold": "Starter",
+      "gold": "Growth",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1482,7 +1502,7 @@
     {
       "qid": "q-037",
       "qtype": "exact",
-      "gold": "Enterprise",
+      "gold": "Starter",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false
@@ -1490,7 +1510,7 @@
     {
       "qid": "q-038",
       "qtype": "exact",
-      "gold": "Growth",
+      "gold": "Enterprise",
       "answer": "Unknown.",
       "correct": false,
       "trap_handled": false

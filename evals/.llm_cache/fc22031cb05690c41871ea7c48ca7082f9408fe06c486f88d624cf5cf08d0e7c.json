@@ -1,0 +1,1 @@
+{"text": "def shard_count(total: int, per_shard: int) -> int:\n    return (total + per_shard - 1) // per_shard", "wall_s": 6.684254290000354}

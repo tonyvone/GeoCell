@@ -1,31 +1,31 @@
 {
   "summary": {
     "test_bugs": 21,
-    "fixed_by_geocell_no_llm": 12,
-    "geocell_no_llm_rate": 0.571,
+    "fixed_by_geocell_no_llm": 11,
+    "geocell_no_llm_rate": 0.524,
     "fixed_by_llm_fallback": 8,
-    "total_fixed": 20,
-    "overall_fix_rate": 0.952,
-    "llm_calls_in_test_phase": 9,
-    "llm_calls_avoided_by_geocell": 12,
-    "call_reduction_vs_llm_only": 0.571,
-    "avg_geocell_latency_ms": 2.66,
-    "avg_llm_latency_s": 6.75,
-    "speedup_x": 2537.6,
+    "total_fixed": 19,
+    "overall_fix_rate": 0.905,
+    "llm_calls_in_test_phase": 10,
+    "llm_calls_avoided_by_geocell": 11,
+    "call_reduction_vs_llm_only": 0.524,
+    "avg_geocell_latency_ms": 2.61,
+    "avg_llm_latency_s": 2.96,
+    "speedup_x": 1134.1,
     "geocell_quarantines": 0,
     "llm_fix_quarantines": 0,
     "hallucination_probes_caught": 5,
     "hallucination_probes_total": 5,
     "baseline_llm_only": {
-      "fixed": 20,
+      "fixed": 18,
       "total": 22,
-      "wall_s": 108.2
+      "wall_s": 91.2
     },
     "llm_report": {
-      "live_calls": 58,
-      "cache_hits": 3,
-      "est_cost_usd": 0.01639,
-      "wall_s": 354.7
+      "live_calls": 32,
+      "cache_hits": 30,
+      "est_cost_usd": 0.00942,
+      "wall_s": 211.8
     },
     "post_fix_suite": {
       "before_fix": {
@@ -33,8 +33,8 @@
         "failed": 21
       },
       "after_geocell_fixes": {
-        "passed": 45,
-        "failed": 9
+        "passed": 44,
+        "failed": 10
       }
     }
   },
@@ -43,31 +43,30 @@
       "bug": "auth-cmp-3",
       "group": "auth_inverted_compare",
       "category": "auth",
-      "geocell_ms": 9.49,
-      "origin": "geocell",
-      "fixed": true,
-      "llm_call": false,
-      "via": "auth-cmp-1",
-      "resonance": 1.086
-    },
-    {
-      "bug": "auth-exp-3",
-      "group": "auth_flipped_expiry",
-      "category": "auth",
-      "geocell_ms": 2.79,
+      "geocell_ms": 9.96,
       "geocell_proposed_but_failed": true,
-      "llm_s": 7.43,
+      "llm_s": 6.72,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
     },
     {
+      "bug": "auth-exp-3",
+      "group": "auth_flipped_expiry",
+      "category": "auth",
+      "geocell_ms": 2.53,
+      "origin": "geocell",
+      "fixed": true,
+      "llm_call": false,
+      "via": "auth-exp-1",
+      "resonance": 0.77
+    },
+    {
       "bug": "auth-role-3",
       "group": "auth_inverted_role",
       "category": "auth",
-      "geocell_ms": 2.6,
-      "geocell_proposed_but_failed": true,
-      "llm_s": 18.38,
+      "geocell_ms": 2.03,
+      "llm_s": 0.0,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -76,31 +75,31 @@
       "bug": "auth-tok-3",
       "group": "auth_inverted_presence",
       "category": "auth",
-      "geocell_ms": 2.47,
+      "geocell_ms": 2.89,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "auth-tok-1",
-      "resonance": 0.933
+      "resonance": 1.072
     },
     {
       "bug": "route-4",
       "group": "route_strip",
       "category": "api_routing",
-      "geocell_ms": 2.43,
+      "geocell_ms": 2.5,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "route-1",
-      "resonance": 0.912
+      "resonance": 1.012
     },
     {
       "bug": "route-5",
       "group": "route_strip",
       "category": "api_routing",
-      "geocell_ms": 2.32,
+      "geocell_ms": 2.61,
       "geocell_proposed_but_failed": true,
-      "llm_s": 4.98,
+      "llm_s": 7.41,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -109,52 +108,52 @@
       "bug": "type-parse-4",
       "group": "type_int_coerce",
       "category": "type_errors",
-      "geocell_ms": 2.16,
+      "geocell_ms": 2.01,
       "geocell_proposed_but_failed": true,
-      "llm_s": 5.25,
+      "llm_s": 0.0,
       "origin": "llm",
-      "fixed": true,
+      "fixed": false,
       "llm_call": true
     },
     {
       "bug": "type-parse-5",
       "group": "type_int_coerce",
       "category": "type_errors",
-      "geocell_ms": 1.99,
-      "origin": "geocell",
+      "geocell_ms": 2.12,
+      "geocell_proposed_but_failed": true,
+      "llm_s": 4.55,
+      "origin": "llm",
       "fixed": true,
-      "llm_call": false,
-      "via": "type-parse-1",
-      "resonance": 0.843
+      "llm_call": true
     },
     {
       "bug": "type-key-4",
       "group": "type_str_concat",
       "category": "type_errors",
-      "geocell_ms": 1.91,
+      "geocell_ms": 1.9,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "type-key-2",
-      "resonance": 1.141
+      "resonance": 1.256
     },
     {
       "bug": "type-key-5",
       "group": "type_str_concat",
       "category": "type_errors",
-      "geocell_ms": 1.85,
+      "geocell_ms": 1.97,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "type-key-2",
-      "resonance": 1.141
+      "resonance": 1.256
     },
     {
       "bug": "cfg-5",
       "group": "config_keyerror",
       "category": "config",
-      "geocell_ms": 1.44,
-      "llm_s": 4.53,
+      "geocell_ms": 1.39,
+      "llm_s": 5.81,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -163,8 +162,8 @@
       "bug": "cfg-6",
       "group": "config_keyerror",
       "category": "config",
-      "geocell_ms": 1.46,
-      "llm_s": 5.25,
+      "geocell_ms": 1.55,
+      "llm_s": 0.0,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -173,8 +172,8 @@
       "bug": "cfg-7",
       "group": "config_keyerror",
       "category": "config",
-      "geocell_ms": 1.96,
-      "llm_s": 5.37,
+      "geocell_ms": 1.6,
+      "llm_s": 0.0,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -183,8 +182,8 @@
       "bug": "cfg-8",
       "group": "config_keyerror",
       "category": "config",
-      "geocell_ms": 1.71,
-      "llm_s": 3.78,
+      "geocell_ms": 2.54,
+      "llm_s": 0.0,
       "origin": "llm",
       "fixed": true,
       "llm_call": true
@@ -193,8 +192,8 @@
       "bug": "db-where-3",
       "group": "db_ignored_param",
       "category": "database",
-      "geocell_ms": 1.48,
-      "llm_s": 5.78,
+      "geocell_ms": 2.24,
+      "llm_s": 5.12,
       "origin": "llm",
       "fixed": false,
       "llm_call": true
@@ -203,67 +202,67 @@
       "bug": "dep-ceil-3",
       "group": "dep_floor_div",
       "category": "dependency",
-      "geocell_ms": 3.39,
+      "geocell_ms": 2.64,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "dep-ceil-2",
-      "resonance": 0.873
+      "resonance": 0.963
     },
     {
       "bug": "dep-ceil-4",
       "group": "dep_floor_div",
       "category": "dependency",
-      "geocell_ms": 2.44,
+      "geocell_ms": 2.54,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
-      "via": "dep-ceil-1",
-      "resonance": 0.879
+      "via": "dep-ceil-2",
+      "resonance": 0.981
     },
     {
       "bug": "dep-json-3",
       "group": "dep_json_sort",
       "category": "dependency",
-      "geocell_ms": 4.2,
+      "geocell_ms": 2.42,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "dep-json-2",
-      "resonance": 1.126
+      "resonance": 1.159
     },
     {
       "bug": "dep-json-4",
       "group": "dep_json_sort",
       "category": "dependency",
-      "geocell_ms": 2.52,
+      "geocell_ms": 2.47,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "dep-json-2",
-      "resonance": 1.037
+      "resonance": 1.118
     },
     {
       "bug": "dep-hash-3",
       "group": "dep_weak_hash",
       "category": "dependency",
-      "geocell_ms": 2.63,
+      "geocell_ms": 2.55,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "dep-hash-1",
-      "resonance": 0.998
+      "resonance": 1.068
     },
     {
       "bug": "dep-sort-3",
       "group": "dep_extra_reverse",
       "category": "dependency",
-      "geocell_ms": 2.69,
+      "geocell_ms": 2.33,
       "origin": "geocell",
       "fixed": true,
       "llm_call": false,
       "via": "dep-sort-2",
-      "resonance": 1.008
+      "resonance": 1.021
     }
   ],
   "probes": {

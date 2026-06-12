@@ -1,0 +1,1 @@
+{"text": "def get_strict_mode(settings: dict) -> bool:\n    return settings.get(\"strict_mode\", False)", "wall_s": 5.807606881000538}

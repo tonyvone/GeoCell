@@ -1,4 +1,4 @@
-# GeoCell Field v0.4
+# GeoCell Field v0.5
 
 A local, CPU-only **epistemic memory engine**. No neural network, no training,
 no API calls — just deterministic geometry, graph dynamics, and belief revision.
@@ -18,7 +18,7 @@ python -m geocell          # or: python geocell_lab.py
 ```
 
 ```bash
-pip install pytest && python -m pytest tests/   # 37 tests
+pip install pytest && python -m pytest tests/   # 42 tests
 ```
 
 ## Quick test
@@ -80,6 +80,23 @@ automatically *retracted* the moment they contradict observed evidence.
 **6. Consolidation (`sleep`).** Communities of mutually supporting memories
 merge into concept cells at the cluster centroid — abstractions used for
 navigation and spreading, never as direct answers.
+
+## v0.5: hybrid retrieval (geometry + BM25) and confident abstention
+
+The hash geometry weights every shared word equally, so a common subject
+("Project Orion") drowned out the discriminating term ("vendor",
+"owned"). v0.5 adds a **BM25 lexical channel** over an inverted index,
+blended with the geometric cosine: rare, informative words now break
+ties. A conservative **stemmer** feeds additive encoder co-features so
+morphological variants (owns/owned/owner) resonate. Recall also exposes a
+top-1-vs-top-2 **margin**, which callers use for *selective answering* —
+serve when one candidate clearly wins, defer when it's a near-tie.
+
+Measured on the enterprise eval (`evals/`), these three changes moved
+GeoOracle from 78/100 to **100/100** answer accuracy (vs 80/100 for the
+LLM alone), lifted LLM-call avoidance from 54% to **69%**, and took
+citation accuracy to **100%** — every served answer is correct and cited,
+ambiguous ones cleanly defer to the LLM.
 
 ## v0.4: the geometry serves (LLM replacement & enhancement layer)
 

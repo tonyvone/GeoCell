@@ -1,0 +1,1 @@
+{"text": "def normalize_report_path(path: str) -> str:\n    return path.rstrip(\"/\")", "wall_s": 5.3119664160003595}

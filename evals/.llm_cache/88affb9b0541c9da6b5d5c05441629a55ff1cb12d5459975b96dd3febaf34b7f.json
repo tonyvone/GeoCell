@@ -1,0 +1,1 @@
+{"text": "def get_user(self, user_id: int):\n    cur = self.conn.cursor()\n    params = (user_id,)\n    cur.execute(\"SELECT id, name FROM users WHERE id = ?\", params)\n    return cur.fetchone()", "wall_s": 7.19824710299963}

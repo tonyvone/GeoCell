@@ -1,0 +1,1 @@
+{"text": "def get_debug(settings: dict) -> bool:\n    return settings.get(\"debug\", False)", "wall_s": 4.717202189999625}

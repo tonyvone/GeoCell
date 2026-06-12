@@ -1,0 +1,1 @@
+{"text": "def verify_webhook_sig(expected_sig: str, supplied_sig: str) -> bool:\n    if hmac.compare_digest(expected_sig, supplied_sig):\n        return True\n    return False", "wall_s": 6.723945488000027}

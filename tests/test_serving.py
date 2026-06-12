@@ -116,8 +116,11 @@ def test_oracle_escalates_then_absorbs():
 
 def test_oracle_quarantines_hallucination():
     mem = pipeline_field()
-    oracle = GeoOracle(mem, llm=lambda p: "Project Orion budget is $9 million.")
-    out = oracle.query("Orion spending plan total?")
+    # High escalation threshold: always verify via the LLM, but quarantine
+    # any answer that contradicts trusted memory.
+    oracle = GeoOracle(mem, llm=lambda p: "Project Orion budget is $9 million.",
+                       resonance_threshold=10.0)
+    out = oracle.query("What is the current Project Orion budget?")
     assert out.get("quarantined") is True
     assert out["origin"] == "field_override"
     assert "$2.7" in out["answer"]                      # stronger memory wins

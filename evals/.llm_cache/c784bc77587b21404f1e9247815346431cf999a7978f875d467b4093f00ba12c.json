@@ -1,0 +1,1 @@
+{"text": "def verify_password(username: str, supplied_hash: str) -> bool:\n    stored = PASSWORDS.get(username, \"\")\n    if hmac.compare_digest(stored, supplied_hash):\n        return True\n    return False", "wall_s": 6.0398350350005785}
