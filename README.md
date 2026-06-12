@@ -18,7 +18,7 @@ python -m geocell          # or: python geocell_lab.py
 ```
 
 ```bash
-pip install pytest && python -m pytest tests/   # 22 tests
+pip install pytest && python -m pytest tests/   # 28 tests
 ```
 
 ## Quick test

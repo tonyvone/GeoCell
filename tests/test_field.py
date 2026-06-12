@@ -214,6 +214,68 @@ def test_save_load_roundtrip(tmp_path):
     json.loads(path.read_text())  # valid JSON on disk
 
 
+# ------------------------------------------------------- regression cases
+
+def falcon_field() -> GeoCellField:
+    mem = GeoCellField()
+    mem.ingest("Falcon X1 launch date is March 15.",
+               source="roadmap_v1", date="2026-01-05", confidence=0.8, authority=0.6)
+    mem.ingest("Falcon X1 launch date was changed to April 22.",
+               source="pm_announcement", date="2026-02-10", confidence=0.92, authority=0.85)
+    mem.ingest("A blog rumor claims the Falcon X1 launch date is June 1.",
+               source="rumor_blog", date="2026-02-15", confidence=0.3, authority=0.1)
+    return mem
+
+
+def test_alphanumeric_tokens_do_not_leak_claim_values():
+    from geocell.text import extract_claim_values
+    values = [v["value"] for v in extract_claim_values("Falcon X1 launch date is March 15.")]
+    assert values == [15.0]  # the 1 in X1 must not register
+
+
+def test_revision_supersedes_in_fresh_domain():
+    mem = falcon_field()
+    statuses = {c.source: c.status for c in mem.cells}
+    assert statuses["roadmap_v1"] == SUPERSEDED
+    assert statuses["pm_announcement"] == ACTIVE
+
+
+def test_weak_late_claim_is_rejected_not_contesting():
+    mem = falcon_field()
+    rumor = next(c for c in mem.cells if c.source == "rumor_blog")
+    assert rumor.status == SUPERSEDED
+    assert any("superseded by #1" in e for e in rumor.ledger)
+    # Conflicts involving displaced beliefs are settled, not open disputes.
+    assert mem.stats()["open_contradictions"] == 0
+
+
+def test_historical_query_recovers_original_claim():
+    mem = falcon_field()
+    ans = mem.ask("What was the original Falcon X1 launch date?")
+    assert "March 15" in ans["answer"]
+    assert ans["belief_status"] == SUPERSEDED
+
+
+def test_different_quantities_about_same_subject_coexist():
+    mem = GeoCellField()
+    mem.ingest("Project Orion budget is $500k.", date="2026-01-01")
+    mem.ingest("Project Orion headcount is 12.", date="2026-01-02")
+    mem.ingest("Project Orion completion is 40%.", date="2026-01-03")
+    assert all(c.status == ACTIVE for c in mem.cells)
+    assert mem.stats()["open_contradictions"] == 0
+
+
+def test_empty_field_operations_are_safe():
+    mem = GeoCellField()
+    assert mem.propagate_trust() == {}
+    assert mem.recall("anything") == []
+    assert mem.ask("anything")["confidence"] == 0.0
+    assert mem.settle() == {"steps": 0, "displacement": 0.0}
+    assert mem.hypothesize() == []
+    assert mem.consolidate() == []
+    assert mem.path("a", "b") is None
+
+
 def test_benchmark_is_green():
     result = run_benchmark()
     assert result["qa_passed"] == result["qa_total"], result["qa"]

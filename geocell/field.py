@@ -56,7 +56,7 @@ from geocell.text import (
 )
 
 _STATUS_WEIGHT = {ACTIVE: 1.0, CONTESTED: 0.8, SUPERSEDED: 0.35, RETRACTED: 0.1}
-_STATUS_WEIGHT_HISTORICAL = {ACTIVE: 0.9, CONTESTED: 0.85, SUPERSEDED: 1.05, RETRACTED: 0.2}
+_STATUS_WEIGHT_HISTORICAL = {ACTIVE: 0.9, CONTESTED: 0.85, SUPERSEDED: 1.15, RETRACTED: 0.2}
 
 
 class GeoCellField:
@@ -135,7 +135,10 @@ class GeoCellField:
     def _relation(self, a: GeoCell, b: GeoCell) -> Tuple[int, float, str]:
         sim = cosine(np.array(a.position, dtype=np.float32), np.array(b.position, dtype=np.float32))
         same_subject = self._subject_overlap(a.subject, b.subject) >= 0.99
-        if same_subject and self._value_conflict(a, b):
+        # Differing numbers only conflict when the sentences describe the
+        # same quantity: "Orion budget is $2M" vs "Orion headcount is 50"
+        # share a subject but are not in dispute.
+        if same_subject and self._value_conflict(a, b) and self._content_overlap(a, b) >= 0.55:
             return CONTRADICTION, max(0.15, 1.0 - sim), "claim_conflict"
         # Opposite polarity only contradicts when both sentences talk
         # about the same predicate, not merely the same subject.
@@ -172,6 +175,12 @@ class GeoCellField:
         supersedes the older claim. Otherwise both cells become contested
         until something stronger arrives.
         """
+        # A conflict with an already-displaced belief is settled history,
+        # not an open dispute.
+        if a.status in (SUPERSEDED, RETRACTED) or b.status in (SUPERSEDED, RETRACTED):
+            if self.graph.has_edge(a.id, b.id):
+                self.graph.edges[a.id, b.id]["resolved"] = True
+            return
         # A hypothesis never beats an observation: defeasible reasoning.
         if a.kind == INFERRED and b.kind == OBSERVED:
             self._retract(a, b)
@@ -184,6 +193,11 @@ class GeoCellField:
         decisive = newer.date and older.date and newer.date != older.date and (
             newer.revision_signal or newer.authority > older.authority
         )
+        # A later but clearly weaker claim (a rumor against a board update)
+        # is rejected outright instead of contesting the stronger belief.
+        if not decisive and older.authority >= newer.authority + 0.25:
+            self._supersede(loser=newer, winner=older)
+            return
         if decisive:
             self._supersede(loser=older, winner=newer)
             # The winner also displaces anything the loser had already
@@ -237,6 +251,9 @@ class GeoCellField:
         unresolved contradictions with a more-trusted opponent push trust
         down. Superseded and retracted cells are capped."""
         n = len(self.cells)
+        if not n:
+            self._trust_dirty = False
+            return {}
         priors = np.array([self._prior(c) for c in self.cells], dtype=np.float64)
         trust = priors.copy()
         for _ in range(iterations):
@@ -372,7 +389,9 @@ class GeoCellField:
 
         scored = []
         for c in self.cells:
-            trust_gate = 0.45 + 0.55 * c.trust
+            # A historical question asks what *was* believed, so the
+            # current trust level must not bury displaced beliefs.
+            trust_gate = 1.0 if historical else 0.45 + 0.55 * c.trust
             score = act[c.id] * trust_gate * status_weight.get(c.status, 0.5)
             scored.append((score, c))
         scored.sort(key=lambda x: (x[0], x[1].id), reverse=True)

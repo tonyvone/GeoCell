@@ -25,7 +25,9 @@ HISTORICAL_WORDS = {"old", "previous", "previously", "original", "originally", "
 
 NUMERIC_QUERY_WORDS = {"budget", "price", "amount", "rate", "revenue", "score", "much", "many"}
 
-_NUMBER_RE = re.compile(r"\$?\d+(?:\.\d+)?\s?(?:m|b|k|million|billion|%|percent)?")
+# Lookbehind keeps digits inside alphanumeric tokens (X1, B2B) from
+# registering as numeric claims.
+_NUMBER_RE = re.compile(r"(?<![a-zA-Z0-9.])\$?\d+(?:\.\d+)?\s?(?:m|b|k|million|billion|%|percent)?")
 
 _RELATION_PATTERNS: List[Tuple[str, re.Pattern]] = [
     ("part_of", re.compile(r"^(.{2,}?)\s+(?:is|are)\s+(?:a\s+|an\s+)?part\s+of\s+(.{2,})$", re.IGNORECASE)),
