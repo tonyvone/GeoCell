@@ -10,15 +10,27 @@ repels, trust flows, beliefs are displaced rather than deleted, and the system
 writes its own inferred conclusions back into the field — with provenance —
 where they can later be defeated by observation.
 
-## Install & run
+## Run on Replit (one click)
+
+1. In Replit: **Create Repl → Import from GitHub** and point it at this repo.
+2. Press **Run**. Replit reads `.replit` / `requirements.txt`, installs
+   numpy + networkx, and starts the web app.
+3. The **web preview** opens an interactive GeoCell: load the demo corpus,
+   add facts with provenance, ask questions, and watch supersession,
+   citations, and contradiction handling live.
+
+No GPU, no API keys, no build step — pure Python stdlib server + numpy.
+
+## Install & run locally
 
 ```bash
-pip install numpy networkx
-python -m geocell          # or: python geocell_lab.py
+pip install -r requirements.txt
+python app.py              # web demo at http://localhost:8080
+python -m geocell          # or the interactive CLI / REPL
 ```
 
 ```bash
-pip install pytest && python -m pytest tests/   # 42 tests
+pip install pytest && python -m pytest tests/   # 49 tests
 ```
 
 ## Quick test

@@ -1,0 +1,17 @@
+entrypoint = "app.py"
+modules = ["python-3.11"]
+run = "pip install -q -r requirements.txt 2>/dev/null; python app.py"
+
+[nix]
+channel = "stable-24_05"
+
+[env]
+PYTHONUNBUFFERED = "1"
+
+[deployment]
+run = ["python", "app.py"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
