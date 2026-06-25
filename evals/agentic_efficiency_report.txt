@@ -1,0 +1,47 @@
+
+======================================================================
+Mechanism 1 — RAG context compression (per grounded query)
+======================================================================
+  Baseline (stuff 20 chunks): 8,800 in + 150 out tok  ->  $0.02649, 2.7750 Wh
+  GeoCell (69% deflect, else 1 cited fact): ~310 avg in tok  ->  $0.00096, 0.1351 Wh
+  REDUCTION: cost 96.4%, energy 95.1% per query
+
+======================================================================
+Mechanism 2 — Agentic loop (cumulative over a run)
+======================================================================
+   10-step agent: baseline 53,500 in tok / $0.1530 / 18.03 Wh
+               GeoCell  35,900 in tok / $0.1002 / 12.75 Wh
+               REDUCTION: tokens 32.9%, cost 34.5%, energy 29.3%
+   30-step agent: baseline 370,500 in tok / $1.0890 / 117.09 Wh
+               GeoCell  111,900 in tok / $0.3132 / 39.51 Wh
+               REDUCTION: tokens 69.8%, cost 71.2%, energy 66.3%
+  100-step agent: baseline 3,685,000 in tok / $10.9800 / 1125.30 Wh
+               GeoCell  377,900 in tok / $1.0587 / 133.17 Wh
+               REDUCTION: tokens 89.7%, cost 90.4%, energy 88.2%
+
+======================================================================
+Why it compounds: baseline input tokens grow O(T^2)
+======================================================================
+  T=  5: baseline    18,000 in tok   GeoCell   16,900   ratio 1.1x
+  T= 10: baseline    53,500 in tok   GeoCell   35,900   ratio 1.5x
+  T= 20: baseline   177,000 in tok   GeoCell   73,900   ratio 2.4x
+  T= 40: baseline   634,000 in tok   GeoCell  149,900   ratio 4.2x
+  T= 80: baseline 2,388,000 in tok   GeoCell  301,900   ratio 7.9x
+
+======================================================================
+Additional layer: deflection of lookup-shaped steps
+======================================================================
+  30-step, 20% of steps are deflectable lookups: cost 77.0%, energy 73.0% vs baseline
+  30-step, 40% of steps are deflectable lookups: cost 82.7%, energy 79.8% vs baseline
+
+======================================================================
+Scale: a fleet of agents
+======================================================================
+  100,000 30-step agent runs/day (compression only):
+     cost saved : $28.3M/year
+     energy saved: 2.83 GWh/year (~944 US homes)
+
+NOTE: estimate with explicit assumptions (pricing, chunking, step
+counts). Token math is the defensible core; energy is scaled from
+tokens. Baseline already uses prefix caching -- the win is on the
+growing, uncacheable dynamic context. Deflection (0.69) is measured.
